@@ -404,8 +404,12 @@
                             var score = scoreArray[i];
                             console.log("Protein ID + Score " + score.proteinID, score.proteinScore);
                         }
-
-                        var cellType = "eukaryota";
+	
+                        
+						//find out the type of cell by reading the first line in the input file
+						var cellType = fileLines[0].trim().toLowerCase();
+						console.log("Cell type = "+cellType);
+						
                         selectCellPicture(cellType, localizationArray);
                         //print the contents of the Localization array
                         for (var i = 0; i < localizationArray.length; i++) {
