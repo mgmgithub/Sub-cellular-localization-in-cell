@@ -1,0 +1,3 @@
+Eukaryota
+Protein Id	Score	Localization	Gene Ontology
+tr|Q8STW1|Q8STW1_ENCCU	20	nucleus	This is not needed
