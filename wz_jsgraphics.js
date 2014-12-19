@@ -42,7 +42,9 @@ or see http://www.gnu.org/copyleft/lesser.html
 */
 
 
+
 var jg_ok, jg_ie, jg_fast, jg_dom, jg_moz;
+
 
 
 function _chkDHTM(wnd, x, i)
@@ -88,7 +90,7 @@ function _pntN()
 
 function _mkDiv(x, y, w, h)
 {
-    this.htm += '<div class="transbox" style="position:absolute;' +
+    this.htm += '<div class="transbox" onmouseover="javaScript:mouseEventHandler(event);"  style="position:absolute;' +
 		'left:' + x + 'px;'+
 		'top:' + y + 'px;'+
 		'width:' + w + 'px;'+
