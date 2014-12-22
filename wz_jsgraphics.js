@@ -42,10 +42,7 @@ or see http://www.gnu.org/copyleft/lesser.html
 */
 
 
-
 var jg_ok, jg_ie, jg_fast, jg_dom, jg_moz;
-
-
 
 function _chkDHTM(wnd, x, i)
 // Under XUL, owner of 'document' must be specified explicitly
@@ -88,9 +85,23 @@ function _pntN()
 	;
 }
 
-function _mkDiv(x, y, w, h)
+function _mkDiv(cID,x, y, w, h)
+{ 
+    this.htm += '<div onmouseover= "javaScript:mouseEventHandler(event,\''+cID+'\');" style="position:absolute;' +
+		'left:' + x + 'px;'+
+		'top:' + y + 'px;'+
+		'width:' + w + 'px;'+
+		'height:' + h + 'px;'+
+		'clip:rect(0,'+w+'px,'+h+'px,0);'+
+		'background-color:' + this.color +
+		(!jg_moz? ';overflow:hidden' : '')+
+		';"><\/div>';
+}
+
+function _mkDivFillPolygon(cID,x, y, w, h)
 {
-    this.htm += '<div class="transbox" onmouseover="javaScript:mouseEventHandler(event);"  style="position:absolute;' +
+ 		
+    this.htm += '<div class="transbox" onmouseover= "javaScript:mouseEventHandler(event,\''+cID+'\');"  style="position:absolute;' +
 		'left:' + x + 'px;'+
 		'top:' + y + 'px;'+
 		'width:' + w + 'px;'+
@@ -108,7 +119,7 @@ function _mkDivIe(x, y, w, h)
 
 function _mkDivPrt(x, y, w, h)
 {
-    this.htm += '<div class="transbox" style="position:absolute;' +
+    this.htm += '<div style="position:absolute;' +
 		'border-left:' + w + 'px solid ' + this.color + ';'+
 		'left:' + x + 'px;'+
 		'top:' + y + 'px;'+
@@ -137,8 +148,9 @@ function _htmPrtRpc()
 		'$1;left:$2px;top:$3px;width:$4px;height:$5px;border-left:$4px solid $1"></div>\n');
 }
 
-function _mkLin(x1, y1, x2, y2)
+function _mkLin(cID,x1, y1, x2, y2)
 {
+    
 	if(x1 > x2)
 	{
 		var _x2 = x2;
@@ -163,14 +175,14 @@ function _mkLin(x1, y1, x2, y2)
 			++x;
 			if(p > 0)
 			{
-				this._mkDiv(ox, y, x-ox, 1);
+				this._mkDiv(cID,ox, y, x-ox, 1);
 				y += yIncr;
 				p += pru;
 				ox = x;
 			}
 			else p += pr;
 		}
-		this._mkDiv(ox, y, x2-ox+1, 1);
+		this._mkDiv(cID,ox, y, x2-ox+1, 1);
 	}
 
 	else
@@ -185,7 +197,7 @@ function _mkLin(x1, y1, x2, y2)
 			{--dy;
 				if(p > 0)
 				{
-					this._mkDiv(x++, y, 1, oy-y+1);
+					this._mkDiv(cID,x++, y, 1, oy-y+1);
 					y += yIncr;
 					p += pru;
 					oy = y;
@@ -196,7 +208,7 @@ function _mkLin(x1, y1, x2, y2)
 					p += pr;
 				}
 			}
-			this._mkDiv(x2, y2, 1, oy-y2+1);
+			this._mkDiv(cID,x2, y2, 1, oy-y2+1);
 		}
 		else
 		{
@@ -205,13 +217,13 @@ function _mkLin(x1, y1, x2, y2)
 				y += yIncr;
 				if(p > 0)
 				{
-					this._mkDiv(x++, oy, 1, y-oy);
+					this._mkDiv(cID,x++, oy, 1, y-oy);
 					p += pru;
 					oy = y;
 				}
 				else p += pr;
 			}
-			this._mkDiv(x2, oy, 1, y2-oy+1);
+			this._mkDiv(cID,x2, oy, 1, y2-oy+1);
 		}
 	}
 }
@@ -635,21 +647,24 @@ function jsGraphics(cnv, wnd)
 
 	this.setStroke = function(x)
 	{
+	  
 		this.stroke = x;
 		if(!(x+1))
 		{
+		  
 			this.drawLine = _mkLinDott;
 			this._mkOv = _mkOvDott;
 			this.drawRect = _mkRectDott;
 		}
 		else if(x-1 > 0)
 		{
+		
 			this.drawLine = _mkLin2D;
 			this._mkOv = _mkOv2D;
 			this.drawRect = _mkRect;
 		}
 		else
-		{
+		{		
 			this.drawLine = _mkLin;
 			this._mkOv = _mkOv;
 			this.drawRect = _mkRect;
@@ -657,14 +672,19 @@ function jsGraphics(cnv, wnd)
 	};
 
 	this.setPrintable = function(arg)
-	{
+	{	 	
 		this.printable = arg;
 		if(jg_fast)
-		{
+		{	
+				   
 			this._mkDiv = _mkDivIe;
 			this._htmRpc = arg? _htmPrtRpc : _htmRpc;
+		}	
+		
+		else 
+		{		 	 
+			 this._mkDiv = arg? _mkDivPrt : _mkDiv;			 
 		}
-		else this._mkDiv = arg? _mkDivPrt : _mkDiv;
 	};
 
 	this.setFont = function(fam, sz, sty)
@@ -674,11 +694,11 @@ function jsGraphics(cnv, wnd)
 		this.ftSty = sty || Font.PLAIN;
 	};
 
-	this.drawPolyline = this.drawPolyLine = function(x, y)
+	this.drawPolyline = this.drawPolyLine = function(cID,x, y)
 	{
 		for (var i=x.length - 1; i;)
 		{--i;
-			this.drawLine(x[i], y[i], x[i+1], y[i+1]);
+			this.drawLine(cID,x[i], y[i], x[i+1], y[i+1]);
 		}
 	};
 
@@ -687,10 +707,10 @@ function jsGraphics(cnv, wnd)
 		this._mkDiv(x, y, w, h);
 	};
 
-	this.drawPolygon = function(x, y)
+	this.drawPolygon = function(cID,x, y)
 	{
-		this.drawPolyline(x, y);
-		this.drawLine(x[x.length-1], y[x.length-1], x[0], y[0]);
+		this.drawPolyline(cID,x, y);
+		this.drawLine(cID,x[x.length-1], y[x.length-1], x[0], y[0]);
 	};
 
 	this.drawEllipse = this.drawOval = function(x, y, w, h)
@@ -811,8 +831,9 @@ The intersection finding technique of this code could be improved
 by remembering the previous intertersection, and by using the slope.
 That could help to adjust intersections to produce a nice
 interior_extrema. */
-	this.fillPolygon = function(array_x, array_y)
+	this.fillPolygon = function(cID,array_x, array_y)
 	{
+	   
 		var i;
 		var y;
 		var miny, maxy;
@@ -820,10 +841,11 @@ interior_extrema. */
 		var x2, y2;
 		var ind1, ind2;
 		var ints;
-
 		var n = array_x.length;
-		if(!n) return;
-
+		if(!n) return;		
+		
+		this._mkDivFillPolygon = _mkDivFillPolygon;
+		
 		miny = array_y[0];
 		maxy = array_y[0];
 		for(i = 1; i < n; i++)
@@ -875,8 +897,10 @@ interior_extrema. */
 			}
 			polyInts.sort(_CompInt);
 			for(i = 0; i < ints; i+=2)
-				this._mkDiv(polyInts[i], y, polyInts[i+1]-polyInts[i]+1, 1);
-		}
+				
+				this._mkDivFillPolygon(cID,polyInts[i], y, polyInts[i+1]-polyInts[i]+1, 1);				
+		}		
+		
 	};
 
 	this.drawString = function(txt, x, y)
@@ -1025,7 +1049,7 @@ text both horizontally (e.g. right) and vertically within that rectangle */
 	this.color = "#000000";
 	this.htm = "";
 	this.wnd = wnd || window;
-
+	
 	if(!jg_ok) _chkDHTM(this.wnd);
 	if(jg_ok)
 	{
@@ -1052,8 +1076,8 @@ text both horizontally (e.g. right) and vertically within that rectangle */
 			this.paint = _pntDoc;
 	}
 	else
-		this.paint = _pntN;
-
+		this.paint = _pntN;		
+		
 	this.setPrintable(false);
 }
 
