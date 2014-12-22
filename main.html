@@ -1,19 +1,30 @@
 <html>
 <head>
 <style>
+body
+{
+  color:blue;
+  font-family:MS Sans Serif;
+ }
+
  div.transbox
 {
     opacity:0.5;
 }
 
-table
+#tblLinkPopup
 {
     background-color:#D3D3D3;
     border:1;
-    color:White;
-    font-family:MS Sans Serif;
 }
-#linkSubPopupText, p.oneProtein
+#tblMain
+{
+  width:100%; 
+  background-color:#F2F2F2;  
+}
+
+
+p.oneProtein
 {
   color:Blue;
   font-weight:bold;
@@ -21,90 +32,55 @@ table
 
 </style>
 </head>
-<body>
+<body>  
+ 
+<table id="tblMain"> 
+<tr>
+<td width="10%">
+</td>
+<td>
 
-<div id="page-wrapper">
+  <div id="page-wrapper">
+  
+  		<h1>Please upload your input file</h1>
+  		<div>
+  			Select a text file: 
+  			<input type="file" id="fileInput">
+  		</div>
+  		<pre id="fileDisplayArea"><pre>
+  
+  </div>
+  <!-- Header  !-->
+  <div id="headerPP"></div> 
+  <!-- Pop-up  !-->
+  <div id="linkPopup" style="position: absolute; top: 0; left: 0; width:300px; z-index: 9000; text-decoration: none; visibility:hidden;">  
+  	 <table id="tblLinkPopup"></table>
+  </div>
+  <!-- Image  !-->
+  <div id="myCanvas" style="position:relative;width:100%;"></div>
+</td>
+<tr>
+</table> 
 
-		<h1>Please upload your input file</h1>
-		<div>
-			Select a text file: 
-			<input type="file" id="fileInput">
-		</div>
-		<pre id="fileDisplayArea"><pre>
-
-	</div>
-	
+<!-- Javascript area  !-->
 <script type="text/javascript" src="./wz_jsgraphics.js"></script>
 <script type="text/javascript">
 
     //Global variables
+	var cellType = "";
     var localizationProtein = [];
     var scoreProtein = [];
-
-    //For showing sub-popup
-    function mouseEventSubPopup(mEvent, proteinID) {
-        // Internet Explorer
-        if (mEvent.srcElement) {
-            showSubPopup(mEvent, 'linkSubPopup', mEvent.srcElement, true, proteinID);
-
-        }
-        // Netscape and Firefox
-        else if (mEvent.target) {
-            showSubPopup(mEvent, 'linkSubPopup', mEvent.target, true, proteinID);
-        }
-
-    }
-    //Drawn sub-popup
-    function showSubPopup(myEvent, id, myElement, isVisible, proteinID) {
-        //linkSubPopup
-        var popup = getPopupObject(id);
-        if (popup) {
-            popup.style.visibility = 'hidden';
-            var x = myEvent.clientX;
-            var y = myEvent.clientY;
-            x = parseInt(myEvent.clientX + document.body.scrollLeft);
-            y = parseInt(myEvent.clientY + document.body.scrollTop);
-            //linkSubPopupText
-            var popupText = getPopupObject(id + "Text");
-            var text = "";
-            //Getting score from protein id (scoreProtein)
-            for (var i = 0; i < scoreProtein.length; i++) {
-                var score = scoreProtein[i];
-                if (score.proteinID == proteinID) {
-
-                    text +=  score.proteinScore;
-                    break;
-                }
-
-           }
-
-            popupText.firstChild.nodeValue = text;
-
-            popup.style.left = x;
-            popup.style.top = y;
-
-            if (isVisible) {
-
-                popup.style.visibility = 'visible';
-            }
-            else {
-                popup.style.visibility = 'hidden';
-            }
-        }
-    }
-    //Clear sub-popup when moveout
-    function clearSubPopup() {
-
-        var popup = getPopupObject('linkSubPopup');
-        popup.style.visibility = 'hidden';
-    }
-
+	var isMainPopup = true;
+	var proteinIDForScore = "";
+	   
+	   
+	    
     //Clear popup when moveout
-    function ClearMainPopup() {
-        var popup = getPopupObject('linkPopup');
-        popup.style.visibility = 'hidden';
-
+    function ClearPopup() {
+	    var popup = getPopupObject('linkPopup');
+        popup.style.visibility = 'hidden';	
     }
+
     //To get id from element
     function getPopupObject(myId) {
         if (document.getElementById(myId)) {
@@ -116,26 +92,51 @@ table
     }
 
     //Shown main-popup
-    function mouseEventHandler(mEvent) {
-        // Internet Explorer
-
+	//This function is called from wz_jsgraphics.js.
+    function mouseEventHandler(mEvent,cID) {
+        // Internet Explorer	
         if (mEvent.srcElement) {
-            showPopup(mEvent, 'linkPopup', mEvent.srcElement, true);
+            showPopup(mEvent, 'linkPopup', mEvent.srcElement, cID);
         }
         // Netscape and Firefox
         else if (mEvent.target) {
-            showPopup(mEvent, 'linkPopup', mEvent.target, true);
-        }        
-
-    }   
-
-    function showPopup(myEvent, id, myElement,isVisible) {
+            showPopup(mEvent, 'linkPopup', mEvent.target, cID);
+        }
+    } 
+	
+	//Showing score and little pop-up
+	function showHighlightScore(proteinID,proteinLocalization,colorCellCompartment)
+	{	 		 
+		
+		ClearPopup();	 
+		selectCellPicture();	
+		highlightCompartments(proteinID, proteinLocalization,colorCellCompartment);
+		isMainPopup = false;	
+		proteinIDForScore = proteinID;
+		
+		//Header
+       	writeHeader('headerPP',proteinID);			 
+	} 
+	
+	function writeHeader(objectName,proteinID)
+	{
+	 	var divHeader = getPopupObject(objectName);
+		while (divHeader.hasChildNodes()) {
+			  divHeader.removeChild(divHeader.firstChild);
+        }		
+              var addHeader = document.createElement("h2");
+                  addHeader.innerHTML = cellType + " : " + proteinID; 
+                  divHeader.appendChild(addHeader);
+	}
+	
+    function showPopup(myEvent, id, myElement,cID) {
         var popup = getPopupObject(id);
         if (popup) {
 
             popup.style.visibility = 'hidden';
             var x = myEvent.clientX;
             var y = myEvent.clientY;
+			
             x = parseInt(myEvent.clientX + document.body.scrollLeft);
             y = parseInt(myEvent.clientY + document.body.scrollTop);
 
@@ -151,65 +152,114 @@ table
             if (localizationProtein.length <= 1) {
                 
                     var score = scoreProtein[0];
-                    text += score.proteinScore;
-
+                    text += score.proteinScore;					
+					
                 var rowProtein = document.createElement("tr");
                 rowProtein.setAttribute("id", "rowProtein0");
                 var columnProtein = document.createElement("td");
-                columnProtein.setAttribute("id", "columnProtein0");
-                columnProtein.innerHTML = "<p class='oneProtein' onmouseout='javaScript:clearSubPopup();'>" + text + "</p>";
+                columnProtein.setAttribute("id", "columnProtein0");				
+                columnProtein.innerHTML = "<p class='oneProtein' onmouseout='javaScript:clearPopup();' >" + text + "</p>";
                 rowProtein.appendChild(columnProtein);
-                tblPopup.appendChild(rowProtein);
+                tblPopup.appendChild(rowProtein);						
+								
 
             }
             //More than one protein
-            else {
+            else {				
+					    
+						if(isMainPopup)
+                  				 {
+                  				  	  for (var i = 0; i < localizationProtein.length; i++) {
+									  	  	  var localization = localizationProtein[i];
+    										  if(localization.proteinLocalization == cID)
+    										  {                                                
+                                                text = localization.proteinID;
+                                                var rowProtein = document.createElement("tr");
+                                                rowProtein.setAttribute("id", "rowProtein" + i);
+                                                var columnProtein = document.createElement("td");
+                                                columnProtein.setAttribute("id", "columnProtein" + i);					
+                            					var innerTag = document.createElement("p");
+                            					innerTag.setAttribute("id", "innnerText" + i);  											
+    											
+    											//Getting score from protein id (scoreProtein)
+    											var proteinScoreAppend = "";
+    											
+              											for (var j = 0; j < scoreProtein.length; j++) {
+              												
+                                                              var score = scoreProtein[j];
+                                                              if (score.proteinID == localization.proteinID) {                                				  			   
+                                                                 	proteinScoreAppend = score.proteinScore;                         				   
+                                                                 	break;  
+                                                              }                                              
+                                                         }                                                
+    											
+    												
+                            					var colorCellCompartment = "#642EFE";
+                            				    innerTag.setAttribute("onClick", "javaScript:showHighlightScore('"+localization.proteinID+"','"+ localization.proteinLocalization+"','"+colorCellCompartment+"');");						
+                            					innerTag.innerHTML = "<a href='#'>" + text + ":<b>" + proteinScoreAppend+"</b></a>";
+                            					
+                            					columnProtein.appendChild(innerTag);                  
+                            					rowProtein.appendChild(columnProtein);
+                                                tblPopup.appendChild(rowProtein);				
+                    					
+                                    		  }
+										  }										  
+										
+                  				 }			
+        				 else
+        				 {			
+						 
+						 
+						 			for (var i = 0; i < scoreProtein.length; i++) {
+                  					 
+                  					 var scorePT = scoreProtein[i];
 
-
-                for (var i = 0; i < localizationProtein.length; i++) {
-                    var localization = localizationProtein[i];
-                    text = localization.proteinID;
-                    var rowProtein = document.createElement("tr");
-                    rowProtein.setAttribute("id", "rowProtein" + i);
-                    var columnProtein = document.createElement("td");
-                    columnProtein.setAttribute("id", "columnProtein" + i);
-                    columnProtein.innerHTML = "<p onmouseover=\"javaScript:mouseEventSubPopup(event,'" + localization.proteinID + "');\"  onmouseout='javaScript:clearSubPopup();'>" + text + "</p>";
-                    rowProtein.appendChild(columnProtein);
-                    tblPopup.appendChild(rowProtein);
-                }
+									 if(proteinIDForScore == scorePT.proteinID)
+									 {
+									 
+                  					  	  text += scorePT.proteinScore;				
+                  					
+                                          var rowProtein = document.createElement("tr");
+                                          rowProtein.setAttribute("id", "rowProtein0");
+                                          var columnProtein = document.createElement("td");
+                                          columnProtein.setAttribute("id", "columnProtein0");				
+                                          columnProtein.innerHTML = "<p class='oneProtein' onmouseout='javaScript:clearPopup();' >" + text + "</p>";
+                                          rowProtein.appendChild(columnProtein);
+                                          tblPopup.appendChild(rowProtein);					  
+										  
+									 	  break;
+                  					 }
+                  					 
+                  					 }        
+                               
+        				}				
 
             }
             popup.style.left = x;
             popup.style.top = y;
+			
+            popup.style.visibility = 'visible';
 
-            if (isVisible) {
-
-                popup.style.visibility = 'visible';
-            }
-            else {
-                popup.style.visibility = 'hidden';
-            }
         }
     }
 
-    function highlightCompartments(cellType, proteinID, proteinLocalization) {
+    function highlightCompartments(proteinID, proteinLocalization,colorCellCompartment) {
         var divCanvas = "myCanvas";
-        var jg = new jsGraphics(divCanvas);
-        var colorCellCompartment = "";
-        colorCellCompartment = "#00CC00";
+        var jg = new jsGraphics(divCanvas); 		 
 		
         if (cellType == "eukaryota") {
 
              if (proteinLocalization == "chloroplast")
             {			 	
                 jg.setColor(colorCellCompartment);			
-                jg.fillPolygon(new Array(163, 160, 160, 164, 170, 176, 184, 193, 200, 208, 215, 221, 225, 230, 229, 214, 196, 184, 172), new Array(124, 128, 134, 138, 141, 142, 142, 142, 141, 139, 136, 134, 132, 129, 121, 115, 114, 115, 118));
-                jg.paint();
+                jg.fillPolygon(proteinLocalization,new Array(163, 160, 160, 164, 170, 176, 184, 193, 200, 208, 215, 221, 225, 230, 229, 214, 196, 184, 172), new Array(124, 128, 134, 138, 141, 142, 142, 142, 141, 139, 136, 134, 132, 129, 121, 115, 114, 115, 118));
+                jg.paint();				
+				
             }
 	    else if (proteinLocalization == "chloroplastMembrane") {
 
                 jg.setColor(colorCellCompartment);
-				jg.drawPolygon(new Array(163, 160, 160, 164, 170, 176, 184, 193, 200, 208, 215, 221, 225, 230, 229, 214, 196, 184, 172), new Array(124, 128, 134, 138, 141, 142, 142, 142, 141, 139, 136, 134, 132, 129, 121, 115, 114, 115, 118));                
+				jg.drawPolygon(proteinLocalization,new Array(163, 160, 160, 164, 170, 176, 184, 193, 200, 208, 215, 221, 225, 230, 229, 214, 196, 184, 172), new Array(124, 128, 134, 138, 141, 142, 142, 142, 141, 139, 136, 134, 132, 129, 121, 115, 114, 115, 118));                
                 jg.paint();
             }
 	    else if (proteinLocalization == "cytosol") {
@@ -219,110 +269,110 @@ table
 		else if (proteinLocalization == "golgiApparatus") {
 
                 jg.setColor(colorCellCompartment);
-                jg.fillPolygon(new Array(128,131,131,129,129,132,136,141,147,153,160,166,171,176,181,183,179,175,170,164,160,153,147,139,133,128,125,122,125), new Array(161,163,166,169,173,177,183,189,193,197,200,203,203,203,204,207,209,209,207,207,205,201,199,194,187,179,175,168,163));
-				jg.fillPolygon(new Array(115,120,123,120,118,118,120,125,131,136,143,150,161,167,173,179,184,189,191,188,182,173,164,157,149,141,133,126,122,117,114,113,113), new Array(157,157,160,163,167,172,177,184,192,196,201,204,210,211,214,214,212,212,216,218,219,217,214,211,209,204,200,191,186,178,169,162,158));
-				jg.fillPolygon(new Array(186,191,195,199,200,195,188,184), new Array(226,225,223,224,229,231,231,229));
-				jg.fillPolygon(new Array(99,103,107,109,109,109,112,113,115,119,123,127,132,140,147,154,161,168,175,179,178,173,165,155,144,135,128,122,115,108,103,95,96), new Array(156,156,157,162,167,171,175,180,185,191,197,202,206,211,215,218,220,222,224,226,229,227,225,222,217,213,207,202,195,181,171,163,159));
-				jg.fillPolygon(new Array(99,103,103,105,107,110,113,113,110,106,103,101,98), new Array(175,178,181,185,189,193,197,200,200,193,189,183,178));
-				jg.fillPolygon(new Array(116,120,124,127,130,135,141,147,154,159,160,157,147,139,131,122,118), new Array(203,205,209,211,215,218,221,223,226,227,231,232,227,224,220,212,207));
-				jg.fillPolygon(new Array(163,166,166,163,162), new Array(234,235,238,238,236));
-				jg.fillPolygon(new Array(99,103,105,109,112,117,123,129,132,133,129,123,116,110,105,100), new Array(192,195,200,204,208,213,216,220,223,225,223,220,215,209,204,199));	
-				jg.fillPolygon(new Array(90,93,93,91,87,86,88), new Array(174,175,179,183,182,178,175));		
+                jg.fillPolygon(proteinLocalization,new Array(128,131,131,129,129,132,136,141,147,153,160,166,171,176,181,183,179,175,170,164,160,153,147,139,133,128,125,122,125), new Array(161,163,166,169,173,177,183,189,193,197,200,203,203,203,204,207,209,209,207,207,205,201,199,194,187,179,175,168,163));
+				jg.fillPolygon(proteinLocalization,new Array(115,120,123,120,118,118,120,125,131,136,143,150,161,167,173,179,184,189,191,188,182,173,164,157,149,141,133,126,122,117,114,113,113), new Array(157,157,160,163,167,172,177,184,192,196,201,204,210,211,214,214,212,212,216,218,219,217,214,211,209,204,200,191,186,178,169,162,158));
+				jg.fillPolygon(proteinLocalization,new Array(186,191,195,199,200,195,188,184), new Array(226,225,223,224,229,231,231,229));
+				jg.fillPolygon(proteinLocalization,new Array(99,103,107,109,109,109,112,113,115,119,123,127,132,140,147,154,161,168,175,179,178,173,165,155,144,135,128,122,115,108,103,95,96), new Array(156,156,157,162,167,171,175,180,185,191,197,202,206,211,215,218,220,222,224,226,229,227,225,222,217,213,207,202,195,181,171,163,159));
+				jg.fillPolygon(proteinLocalization,new Array(99,103,103,105,107,110,113,113,110,106,103,101,98), new Array(175,178,181,185,189,193,197,200,200,193,189,183,178));
+				jg.fillPolygon(proteinLocalization,new Array(116,120,124,127,130,135,141,147,154,159,160,157,147,139,131,122,118), new Array(203,205,209,211,215,218,221,223,226,227,231,232,227,224,220,212,207));
+				jg.fillPolygon(proteinLocalization,new Array(163,166,166,163,162), new Array(234,235,238,238,236));
+				jg.fillPolygon(proteinLocalization,new Array(99,103,105,109,112,117,123,129,132,133,129,123,116,110,105,100), new Array(192,195,200,204,208,213,216,220,223,225,223,220,215,209,204,199));	
+				jg.fillPolygon(proteinLocalization,new Array(90,93,93,91,87,86,88), new Array(174,175,179,183,182,178,175));		
 				jg.paint();
             }
 		else if (proteinLocalization == "golgiApparatusMembrane") {
-
+			 			
                 jg.setColor(colorCellCompartment);
-                jg.drawPolygon(new Array(128,131,131,129,129,132,136,141,147,153,160,166,171,176,181,183,179,175,170,164,160,153,147,139,133,128,125,122,125), new Array(161,163,166,169,173,177,183,189,193,197,200,203,203,203,204,207,209,209,207,207,205,201,199,194,187,179,175,168,163));
-				jg.drawPolygon(new Array(115,120,123,120,118,118,120,125,131,136,143,150,161,167,173,179,184,189,191,188,182,173,164,157,149,141,133,126,122,117,114,113,113), new Array(157,157,160,163,167,172,177,184,192,196,201,204,210,211,214,214,212,212,216,218,219,217,214,211,209,204,200,191,186,178,169,162,158));
-				jg.drawPolygon(new Array(186,191,195,199,200,195,188,184), new Array(226,225,223,224,229,231,231,229));
-				jg.drawPolygon(new Array(99,103,107,109,109,109,112,113,115,119,123,127,132,140,147,154,161,168,175,179,178,173,165,155,144,135,128,122,115,108,103,95,96), new Array(156,156,157,162,167,171,175,180,185,191,197,202,206,211,215,218,220,222,224,226,229,227,225,222,217,213,207,202,195,181,171,163,159));
-				jg.drawPolygon(new Array(99,103,103,105,107,110,113,113,110,106,103,101,98), new Array(175,178,181,185,189,193,197,200,200,193,189,183,178));
-				jg.drawPolygon(new Array(116,120,124,127,130,135,141,147,154,159,160,157,147,139,131,122,118), new Array(203,205,209,211,215,218,221,223,226,227,231,232,227,224,220,212,207));
-				jg.drawPolygon(new Array(163,166,166,163,162), new Array(234,235,238,238,236));
-				jg.drawPolygon(new Array(99,103,105,109,112,117,123,129,132,133,129,123,116,110,105,100), new Array(192,195,200,204,208,213,216,220,223,225,223,220,215,209,204,199));	
-				jg.drawPolygon(new Array(90,93,93,91,87,86,88), new Array(174,175,179,183,182,178,175));
+                jg.drawPolygon(proteinLocalization,new Array(128,131,131,129,129,132,136,141,147,153,160,166,171,176,181,183,179,175,170,164,160,153,147,139,133,128,125,122,125), new Array(161,163,166,169,173,177,183,189,193,197,200,203,203,203,204,207,209,209,207,207,205,201,199,194,187,179,175,168,163));
+				jg.drawPolygon(proteinLocalization,new Array(115,120,123,120,118,118,120,125,131,136,143,150,161,167,173,179,184,189,191,188,182,173,164,157,149,141,133,126,122,117,114,113,113), new Array(157,157,160,163,167,172,177,184,192,196,201,204,210,211,214,214,212,212,216,218,219,217,214,211,209,204,200,191,186,178,169,162,158));
+				jg.drawPolygon(proteinLocalization,new Array(186,191,195,199,200,195,188,184), new Array(226,225,223,224,229,231,231,229));
+				jg.drawPolygon(proteinLocalization,new Array(99,103,107,109,109,109,112,113,115,119,123,127,132,140,147,154,161,168,175,179,178,173,165,155,144,135,128,122,115,108,103,95,96), new Array(156,156,157,162,167,171,175,180,185,191,197,202,206,211,215,218,220,222,224,226,229,227,225,222,217,213,207,202,195,181,171,163,159));
+				jg.drawPolygon(proteinLocalization,new Array(99,103,103,105,107,110,113,113,110,106,103,101,98), new Array(175,178,181,185,189,193,197,200,200,193,189,183,178));
+				jg.drawPolygon(proteinLocalization,new Array(116,120,124,127,130,135,141,147,154,159,160,157,147,139,131,122,118), new Array(203,205,209,211,215,218,221,223,226,227,231,232,227,224,220,212,207));
+				jg.drawPolygon(proteinLocalization,new Array(163,166,166,163,162), new Array(234,235,238,238,236));
+				jg.drawPolygon(proteinLocalization,new Array(99,103,105,109,112,117,123,129,132,133,129,123,116,110,105,100), new Array(192,195,200,204,208,213,216,220,223,225,223,220,215,209,204,199));	
+				jg.drawPolygon(proteinLocalization,new Array(90,93,93,91,87,86,88), new Array(174,175,179,183,182,178,175));
                 jg.paint();
             }
 		else if (proteinLocalization == "peroxisome") {
                 jg.setColor(colorCellCompartment);				
-                jg.fillPolygon(new Array(161,154,150,150,152,155,158,162,166,171,176,181,184,187,186,184), new Array(156,159,163,168,172,175,177,179,180,180,180,180,177,173,168,164));
+                jg.fillPolygon(proteinLocalization,new Array(161,154,150,150,152,155,158,162,166,171,176,181,184,187,186,184), new Array(156,159,163,168,172,175,177,179,180,180,180,180,177,173,168,164));
                 jg.paint();
             }
 		else if (proteinLocalization == "peroxisomeMembrane") {
                 jg.setColor(colorCellCompartment);
-                jg.drawPolygon(new Array(161,154,150,150,152,155,158,162,166,171,176,181,184,187,186,184), new Array(156,159,163,168,172,175,177,179,180,180,180,180,177,173,168,164));
+                jg.drawPolygon(proteinLocalization,new Array(161,154,150,150,152,155,158,162,166,171,176,181,184,187,186,184), new Array(156,159,163,168,172,175,177,179,180,180,180,180,177,173,168,164));
                 jg.paint();
             }
 		else if (proteinLocalization == "plastid") {
                 jg.setColor(colorCellCompartment);				
-				jg.fillPolygon(new Array(270,266,264,266,271,278,284,287,282), new Array(224,228,231,236,239,240,238,232,226));
+				jg.fillPolygon(proteinLocalization,new Array(270,266,264,266,271,278,284,287,282), new Array(224,228,231,236,239,240,238,232,226));
                 jg.paint();
             }
 		else if (proteinLocalization == "plasmaMembrane") {
                 jg.setColor(colorCellCompartment);
-                jg.drawPolygon(new Array(87,79,70,69,73,78,89,101,121,136,149,168,185,220,235,257,282,302,329,348,376,403,425,437,438,433,416,389,358,315,259,211,167,139,110), new Array(130,144,168,186,202,214,226,235,246,250,255,258,260,262,263,263,263,262,259,256,250,238,221,202,184,159,134,114,104,97,96,96,99,102,112));
+                jg.drawPolygon(proteinLocalization,new Array(87,79,70,69,73,78,89,101,121,136,149,168,185,220,235,257,282,302,329,348,376,403,425,437,438,433,416,389,358,315,259,211,167,139,110), new Array(130,144,168,186,202,214,226,235,246,250,255,258,260,262,263,263,263,262,259,256,250,238,221,202,184,159,134,114,104,97,96,96,99,102,112));
                 jg.paint();
             }
 		else if (proteinLocalization == "extraCellular") {
 
                 jg.setColor(colorCellCompartment);
-			    jg.fillPolygon(new Array(439,500,498,0,1,71,68,69,72,79,86,97,113,131,149,171,196,219,257,287,317,354,377,401,422,432,437), new Array(196,195,1,2,194,196,186,177,159,143,130,120,111,103,100,97,97,96,97,97,99,104,110,122,139,156,178));
-                jg.fillPolygon(new Array(440,499,500,1,1,69,73,83,97,113,135,164,193,216,243,276,309,341,363,384,405,419,428,435,439), new Array(197,196,399,397,195,197,207,221,234,242,250,258,260,262,263,262,260,256,252,246,237,226,218,206,199));
+			    jg.fillPolygon(proteinLocalization,new Array(439,500,498,0,1,71,68,69,72,79,86,97,113,131,149,171,196,219,257,287,317,354,377,401,422,432,437), new Array(196,195,1,2,194,196,186,177,159,143,130,120,111,103,100,97,97,96,97,97,99,104,110,122,139,156,178));
+                jg.fillPolygon(proteinLocalization,new Array(440,499,500,1,1,69,73,83,97,113,135,164,193,216,243,276,309,341,363,384,405,419,428,435,439), new Array(197,196,399,397,195,197,207,221,234,242,250,258,260,262,263,262,260,256,252,246,237,226,218,206,199));
 				jg.paint();
             }
 		else if (proteinLocalization == "nucleus") {
                 jg.setColor(colorCellCompartment);
-                jg.fillPolygon(new Array(234, 226, 223, 224, 229, 237, 244, 252, 258, 264, 274, 283, 290, 298, 298, 295, 280, 245), new Array(140, 145, 152, 160, 164, 168, 170, 172, 172, 173, 173, 172, 170, 165, 157, 148, 141, 138));
+                jg.fillPolygon(proteinLocalization,new Array(234, 226, 223, 224, 229, 237, 244, 252, 258, 264, 274, 283, 290, 298, 298, 295, 280, 245), new Array(140, 145, 152, 160, 164, 168, 170, 172, 172, 173, 173, 172, 170, 165, 157, 148, 141, 138));
                 jg.paint();
             }
 		else if (proteinLocalization == "nucleusMembrane") {
                 jg.setColor(colorCellCompartment);
-                jg.drawPolygon(new Array(234, 226, 223, 224, 229, 237, 244, 252, 258, 264, 274, 283, 290, 298, 298, 295, 280, 245), new Array(140, 145, 152, 160, 164, 168, 170, 172, 172, 173, 173, 172, 170, 165, 157, 148, 141, 138));
+                jg.drawPolygon(proteinLocalization,new Array(234, 226, 223, 224, 229, 237, 244, 252, 258, 264, 274, 283, 290, 298, 298, 295, 280, 245), new Array(140, 145, 152, 160, 164, 168, 170, 172, 172, 173, 173, 172, 170, 165, 157, 148, 141, 138));
                 jg.paint();
             }
         else if (proteinLocalization == "vacuole") {
 				jg.setColor(colorCellCompartment);
-                jg.fillPolygon(new Array(318,312,311,314,318,323,327,330,330,327,322,318,318,322,328,336,345,352,361,369,373,379,384,390,395,396,388,378,363,351,340,329), new Array(125,131,136,142,146,152,156,162,168,174,181,187,193,194,193,190,185,183,177,176,174,173,173,172,171,162,152,143,135,128,124,123));
+                jg.fillPolygon(proteinLocalization,new Array(318,312,311,314,318,323,327,330,330,327,322,318,318,322,328,336,345,352,361,369,373,379,384,390,395,396,388,378,363,351,340,329), new Array(125,131,136,142,146,152,156,162,168,174,181,187,193,194,193,190,185,183,177,176,174,173,173,172,171,162,152,143,135,128,124,123));
                 jg.paint();
             }   
 	    else if (proteinLocalization == "vacuoleMembrane") {
                 jg.setColor(colorCellCompartment);
-                jg.drawPolygon(new Array(318,312,311,314,318,323,327,330,330,327,322,318,318,322,328,336,345,352,361,369,373,379,384,390,395,396,388,378,363,351,340,329), new Array(125,131,136,142,146,152,156,162,168,174,181,187,193,194,193,190,185,183,177,176,174,173,173,172,171,162,152,143,135,128,124,123));
+                jg.drawPolygon(proteinLocalization,new Array(318,312,311,314,318,323,327,330,330,327,322,318,318,322,328,336,345,352,361,369,373,379,384,390,395,396,388,378,363,351,340,329), new Array(125,131,136,142,146,152,156,162,168,174,181,187,193,194,193,190,185,183,177,176,174,173,173,172,171,162,152,143,135,128,124,123));
                 jg.paint();
             }
 		else if (proteinLocalization == "mitochondria") {
 
                 jg.setColor(colorCellCompartment);			
-				jg.fillPolygon(new Array(341,337,338,341,345,351,356,363,369,377,383,389,395,398,401,401,392,383), new Array(215,220,225,229,230,230,229,227,225,221,217,214,209,204,199,192,190,193));
+				jg.fillPolygon(proteinLocalization,new Array(341,337,338,341,345,351,356,363,369,377,383,389,395,398,401,401,392,383), new Array(215,220,225,229,230,230,229,227,225,221,217,214,209,204,199,192,190,193));
                 jg.paint();
             }
 		else if (proteinLocalization == "mitochondriaMembrane") {
 
                 jg.setColor(colorCellCompartment);
-                jg.drawPolygon(new Array(341,337,338,341,345,351,356,363,369,377,383,389,395,398,401,401,392,383), new Array(215,220,225,229,230,230,229,227,225,221,217,214,209,204,199,192,190,193));
+                jg.drawPolygon(proteinLocalization,new Array(341,337,338,341,345,351,356,363,369,377,383,389,395,398,401,401,392,383), new Array(215,220,225,229,230,230,229,227,225,221,217,214,209,204,199,192,190,193));
                 jg.paint();
             }
 		else if (proteinLocalization == "endoplasmicReticulum") {
 
                 jg.setColor(colorCellCompartment);			
-                jg.fillPolygon(new Array(255,254,253,249,245,241,237,233,230,228,226,228,232,239,242,240,236,233,229,226,228,233,239,246,251,258,263,263,258,255,250,246,247,252,257,262,268,273,271,267,262,258,258,258,259), new Array(171,176,179,180,179,178,176,173,171,170,173,178,180,182,185,187,186,184,183,184,187,191,192,194,194,196,194,191,190,190,189,188,185,186,187,187,186,185,181,181,181,180,177,175,172));
-				jg.fillPolygon(new Array(274,276,279,278,278,282,287,292,298,300,297,294,290,286,282,280,280,279), new Array(172,177,181,183,186,187,184,181,177,172,170,172,175,178,178,177,174,172));
-				jg.fillPolygon(new Array(268,274,280,288,293,298,298,292,283,274,267,267), new Array(191,192,190,187,185,183,186,190,194,195,195,193));				
-				jg.fillPolygon(new Array(266,274,282,289,294,300,304,305,307,309,306,299,293,292,295,300,305,307,309,307,303,297,289,285,279,276,275,280,285,287,284,281,273,268,264,264), new Array(201,200,199,197,194,190,187,183,182,186,191,195,200,204,204,201,197,195,196,201,206,210,212,214,216,215,212,210,208,205,203,203,205,207,206,203));
-				jg.fillPolygon(new Array(211,215,217,222,227,233,240,247,254,259,254,245,237,235,238,240,238,232,226,221,214,212,216,220,223,226,227,225,220,215,209,207,208), new Array(173,176,182,187,191,194,196,198,200,202,205,203,202,204,207,209,211,211,208,205,201,197,196,198,201,201,198,196,192,189,183,178,175));				
-				jg.fillPolygon(new Array(246,252,257,263,269,269,262,253,248,245), new Array(210,211,212,212,212,215,217,217,215,214));
+                jg.fillPolygon(proteinLocalization,new Array(255,254,253,249,245,241,237,233,230,228,226,228,232,239,242,240,236,233,229,226,228,233,239,246,251,258,263,263,258,255,250,246,247,252,257,262,268,273,271,267,262,258,258,258,259), new Array(171,176,179,180,179,178,176,173,171,170,173,178,180,182,185,187,186,184,183,184,187,191,192,194,194,196,194,191,190,190,189,188,185,186,187,187,186,185,181,181,181,180,177,175,172));
+				jg.fillPolygon(proteinLocalization,new Array(274,276,279,278,278,282,287,292,298,300,297,294,290,286,282,280,280,279), new Array(172,177,181,183,186,187,184,181,177,172,170,172,175,178,178,177,174,172));
+				jg.fillPolygon(proteinLocalization,new Array(268,274,280,288,293,298,298,292,283,274,267,267), new Array(191,192,190,187,185,183,186,190,194,195,195,193));				
+				jg.fillPolygon(proteinLocalization,new Array(266,274,282,289,294,300,304,305,307,309,306,299,293,292,295,300,305,307,309,307,303,297,289,285,279,276,275,280,285,287,284,281,273,268,264,264), new Array(201,200,199,197,194,190,187,183,182,186,191,195,200,204,204,201,197,195,196,201,206,210,212,214,216,215,212,210,208,205,203,203,205,207,206,203));
+				jg.fillPolygon(proteinLocalization,new Array(211,215,217,222,227,233,240,247,254,259,254,245,237,235,238,240,238,232,226,221,214,212,216,220,223,226,227,225,220,215,209,207,208), new Array(173,176,182,187,191,194,196,198,200,202,205,203,202,204,207,209,211,211,208,205,201,197,196,198,201,201,198,196,192,189,183,178,175));				
+				jg.fillPolygon(proteinLocalization,new Array(246,252,257,263,269,269,262,253,248,245), new Array(210,211,212,212,212,215,217,217,215,214));
                 jg.paint();
             }
 		else if (proteinLocalization == "endoplasmicReticulumMembrane") {
 
                 jg.setColor(colorCellCompartment);
-                jg.drawPolygon(new Array(255,254,253,249,245,241,237,233,230,228,226,228,232,239,242,240,236,233,229,226,228,233,239,246,251,258,263,263,258,255,250,246,247,252,257,262,268,273,271,267,262,258,258,258,259), new Array(171,176,179,180,179,178,176,173,171,170,173,178,180,182,185,187,186,184,183,184,187,191,192,194,194,196,194,191,190,190,189,188,185,186,187,187,186,185,181,181,181,180,177,175,172));
-				jg.drawPolygon(new Array(274,276,279,278,278,282,287,292,298,300,297,294,290,286,282,280,280,279), new Array(172,177,181,183,186,187,184,181,177,172,170,172,175,178,178,177,174,172));
-				jg.drawPolygon(new Array(268,274,280,288,293,298,298,292,283,274,267,267), new Array(191,192,190,187,185,183,186,190,194,195,195,193));				
-				jg.drawPolygon(new Array(266,274,282,289,294,300,304,305,307,309,306,299,293,292,295,300,305,307,309,307,303,297,289,285,279,276,275,280,285,287,284,281,273,268,264,264), new Array(201,200,199,197,194,190,187,183,182,186,191,195,200,204,204,201,197,195,196,201,206,210,212,214,216,215,212,210,208,205,203,203,205,207,206,203));
-				jg.drawPolygon(new Array(211,215,217,222,227,233,240,247,254,259,254,245,237,235,238,240,238,232,226,221,214,212,216,220,223,226,227,225,220,215,209,207,208), new Array(173,176,182,187,191,194,196,198,200,202,205,203,202,204,207,209,211,211,208,205,201,197,196,198,201,201,198,196,192,189,183,178,175));				
-				jg.drawPolygon(new Array(246,252,257,263,269,269,262,253,248,245), new Array(210,211,212,212,212,215,217,217,215,214));
+                jg.drawPolygon(proteinLocalization,new Array(255,254,253,249,245,241,237,233,230,228,226,228,232,239,242,240,236,233,229,226,228,233,239,246,251,258,263,263,258,255,250,246,247,252,257,262,268,273,271,267,262,258,258,258,259), new Array(171,176,179,180,179,178,176,173,171,170,173,178,180,182,185,187,186,184,183,184,187,191,192,194,194,196,194,191,190,190,189,188,185,186,187,187,186,185,181,181,181,180,177,175,172));
+				jg.drawPolygon(proteinLocalization,new Array(274,276,279,278,278,282,287,292,298,300,297,294,290,286,282,280,280,279), new Array(172,177,181,183,186,187,184,181,177,172,170,172,175,178,178,177,174,172));
+				jg.drawPolygon(proteinLocalization,new Array(268,274,280,288,293,298,298,292,283,274,267,267), new Array(191,192,190,187,185,183,186,190,194,195,195,193));				
+				jg.drawPolygon(proteinLocalization,new Array(266,274,282,289,294,300,304,305,307,309,306,299,293,292,295,300,305,307,309,307,303,297,289,285,279,276,275,280,285,287,284,281,273,268,264,264), new Array(201,200,199,197,194,190,187,183,182,186,191,195,200,204,204,201,197,195,196,201,206,210,212,214,216,215,212,210,208,205,203,203,205,207,206,203));
+				jg.drawPolygon(proteinLocalization,new Array(211,215,217,222,227,233,240,247,254,259,254,245,237,235,238,240,238,232,226,221,214,212,216,220,223,226,227,225,220,215,209,207,208), new Array(173,176,182,187,191,194,196,198,200,202,205,203,202,204,207,209,211,211,208,205,201,197,196,198,201,201,198,196,192,189,183,178,175));				
+				jg.drawPolygon(proteinLocalization,new Array(246,252,257,263,269,269,262,253,248,245), new Array(210,211,212,212,212,215,217,217,215,214));
                 jg.paint();
             }
             
@@ -371,12 +421,12 @@ table
 			}
 			if(proteinLocalization=="outer membrane"){
 				jg.setColor(colorCellCompartment);				
-                jg.fillPolygon(new Array(161,154,150,150,152,155,158,162,166,171,176,181,184,187,186,184), new Array(156,159,163,168,172,175,177,179,180,180,180,180,177,173,168,164));
+                jg.fillPolygon(proteinLocalization,new Array(161,154,150,150,152,155,158,162,166,171,176,181,184,187,186,184), new Array(156,159,163,168,172,175,177,179,180,180,180,180,177,173,168,164));
                 jg.paint();		
 			}
 			else if(proteinLocalization=="periplasmic space"){
 				jg.setColor(colorCellCompartment);				
-                jg.fillPolygon(new Array(161,154,150,150,152,155,158,162,166,171,176,181,184,187,186,184), new Array(156,159,163,168,172,175,177,179,180,180,180,180,177,173,168,164));
+                jg.fillPolygon(proteinLocalization,new Array(161,154,150,150,152,155,158,162,166,171,176,181,184,187,186,184), new Array(156,159,163,168,172,175,177,179,180,180,180,180,177,173,168,164));
                 jg.paint();		
 			}
 			else if(proteinLocalization=="plasma membrane"){
@@ -398,14 +448,13 @@ table
 
     }
 
-    function selectCellPicture(cellType, localizationArray) {
+    function selectCellPicture() {
 
-        localizationProtein = localizationArray;
+        
         //Clear old image for next uploading
         var clearImg = getPopupObject('myCanvas');
         while (clearImg.hasChildNodes()) {
-
-            clearImg.removeChild(clearImg.firstChild);
+			  clearImg.removeChild(clearImg.firstChild);
         }
         //Select eukaryota
         if (cellType == "eukaryota") {
@@ -415,8 +464,7 @@ table
             img.setAttribute("width", "500");
             img.setAttribute("height", "400");
             img.setAttribute("alt", "");
-            img.setAttribute("onMouseMove", "javaScript:ClearMainPopup();");
-           
+            img.setAttribute("onMouseMove", "javaScript:ClearPopup();");
             document.getElementById("myCanvas").appendChild(img);
         }
         //Select bacteria
@@ -428,7 +476,7 @@ table
             img.setAttribute("width", "500");
             img.setAttribute("height", "400");
             img.setAttribute("alt", "");
-            img.setAttribute("onMouseMove", "javaScript:ClearMainPopup();");
+            img.setAttribute("onMouseMove", "javaScript:ClearPopup();");
            
             document.getElementById("myCanvas").appendChild(img);
 
@@ -442,7 +490,7 @@ table
             img.setAttribute("width", "500");
             img.setAttribute("height", "400");
             img.setAttribute("alt", "");
-            img.setAttribute("onMouseMove", "javaScript:ClearMainPopup();");
+            img.setAttribute("onMouseMove", "javaScript:ClearPopup();");
            
             document.getElementById("myCanvas").appendChild(img);
 		
@@ -452,15 +500,16 @@ table
     }
 
     window.onload = function () {
+		
         var fileInput = document.getElementById('fileInput');
-        var fileDisplayArea = document.getElementById('fileDisplayArea');
+        var fileDisplayArea = document.getElementById('fileDisplayArea');		
 
         fileInput.addEventListener('change', function (e) {
             var file = fileInput.files[0];
             var textType = /text.*/;
 
             if (file.type.match(textType)) {
-
+			   
                 var reader = new FileReader();
                 reader.onload = function (e) {
                     var words = (function () {
@@ -495,30 +544,43 @@ table
                             });
                             //}
 
-                        }
-
-                        //print the contents of the Score array
-                        //for (var i = 0; i < scoreArray.length; i++) {
-                         //   var score = scoreArray[i];
-                            //console.log("Protein ID + Score " + score.proteinID, score.proteinScore);
-                        //}
+                        }                       
 
                         //Assigning global variable of score array
                         scoreProtein = scoreArray;
-
+						localizationProtein = localizationArray;
 
                         //find out the type of cell by reading the first line in the input file
-                        var cellType = fileLines[0].trim().toLowerCase();
-                        console.log("Cell type = " + cellType);
-
-                        selectCellPicture(cellType, localizationArray);
+                        cellType = fileLines[0].trim().toLowerCase();
+						
+                        selectCellPicture();
                         //print the contents of the Localization array
-                        for (var i = 0; i < localizationArray.length; i++) {
-                            var localization = localizationArray[i];
-                            //console.log("Protein ID + Localization " + localization.proteinID, localization.proteinLocalization);
-
-                            highlightCompartments(cellType, localization.proteinID, localization.proteinLocalization);
-                        }
+						var colorCellCompartment = "";
+										
+                          for (var i = 0; i < localizationArray.length; i++) {
+                              var localization = localizationArray[i];                             
+							  
+							  if (localizationArray.length <= 1) {
+						
+							  	 		  colorCellCompartment = "#642EFE";
+										  highlightCompartments(localization.proteinID, localization.proteinLocalization,colorCellCompartment);
+										  
+										  //Header
+										  writeHeader('headerPP',localization.proteinID);
+                            				 
+              						}
+              						else
+              						{	
+							  
+                							colorCellCompartment = "#00CC00";			   
+                                            highlightCompartments(localization.proteinID, localization.proteinLocalization,colorCellCompartment);
+											
+											//Header				 
+											 writeHeader('headerPP',"");										 
+											 
+								   }
+                          }
+						
 
                     } ());
 
@@ -535,13 +597,6 @@ table
     }
 
 </script> 
-  <div id="linkPopup" style="position: absolute; top: 0; left: 0; width:300px; z-index: 9000; text-decoration: none; visibility:hidden;">  
-  <table id="tblLinkPopup"></table>
-	<!--<table bgcolor="blue" border="1"><tr><td style="color:white;" id="linkPopupText">Popup text</td></tr></table>-->
-  </div>
-  <div id="linkSubPopup" style="position: absolute; top: 10; left: 10; width:300px; z-index: 9000; text-decoration: none; visibility:hidden;">
-  <table><tr><td id="linkSubPopupText" >Popup text</td></tr></table>
-  </div>
-  <div id="myCanvas" style="position:relative;width:100%;"></div>
+   
 </body>
 </html>
