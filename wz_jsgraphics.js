@@ -85,9 +85,9 @@ function _pntN()
 	;
 }
 
-function _mkDiv(cID,x, y, w, h)
+function _mkDiv(cID,pID,x, y, w, h)
 { 
-    this.htm += '<div onmouseover= "javaScript:mouseEventHandler(event,\''+cID+'\');" style="position:absolute;' +
+    this.htm += '<div onmouseover= "javaScript:mouseEventHandler(event,\''+cID+'\',\''+pID+'\');" style="position:absolute;' +
 		'left:' + x + 'px;'+
 		'top:' + y + 'px;'+
 		'width:' + w + 'px;'+
@@ -98,10 +98,10 @@ function _mkDiv(cID,x, y, w, h)
 		';"><\/div>';
 }
 
-function _mkDivFillPolygon(cID,x, y, w, h)
+function _mkDivFillPolygon(cID,pID,x, y, w, h)
 {
  		
-    this.htm += '<div class="transbox" onmouseover= "javaScript:mouseEventHandler(event,\''+cID+'\');"  style="position:absolute;' +
+    this.htm += '<div class="transbox" onmouseover= "javaScript:mouseEventHandler(event,\''+cID+'\',\''+pID+'\');"  style="position:absolute;' +
 		'left:' + x + 'px;'+
 		'top:' + y + 'px;'+
 		'width:' + w + 'px;'+
@@ -148,7 +148,7 @@ function _htmPrtRpc()
 		'$1;left:$2px;top:$3px;width:$4px;height:$5px;border-left:$4px solid $1"></div>\n');
 }
 
-function _mkLin(cID,x1, y1, x2, y2)
+function _mkLin(cID,pID,x1, y1, x2, y2)
 {
     
 	if(x1 > x2)
@@ -175,14 +175,14 @@ function _mkLin(cID,x1, y1, x2, y2)
 			++x;
 			if(p > 0)
 			{
-				this._mkDiv(cID,ox, y, x-ox, 1);
+				this._mkDiv(cID,pID,ox, y, x-ox, 1);
 				y += yIncr;
 				p += pru;
 				ox = x;
 			}
 			else p += pr;
 		}
-		this._mkDiv(cID,ox, y, x2-ox+1, 1);
+		this._mkDiv(cID,pID,ox, y, x2-ox+1, 1);
 	}
 
 	else
@@ -197,7 +197,7 @@ function _mkLin(cID,x1, y1, x2, y2)
 			{--dy;
 				if(p > 0)
 				{
-					this._mkDiv(cID,x++, y, 1, oy-y+1);
+					this._mkDiv(cID,pID,x++, y, 1, oy-y+1);
 					y += yIncr;
 					p += pru;
 					oy = y;
@@ -208,7 +208,7 @@ function _mkLin(cID,x1, y1, x2, y2)
 					p += pr;
 				}
 			}
-			this._mkDiv(cID,x2, y2, 1, oy-y2+1);
+			this._mkDiv(cID,pID,x2, y2, 1, oy-y2+1);
 		}
 		else
 		{
@@ -217,13 +217,13 @@ function _mkLin(cID,x1, y1, x2, y2)
 				y += yIncr;
 				if(p > 0)
 				{
-					this._mkDiv(cID,x++, oy, 1, y-oy);
+					this._mkDiv(cID,pID,x++, oy, 1, y-oy);
 					p += pru;
 					oy = y;
 				}
 				else p += pr;
 			}
-			this._mkDiv(cID,x2, oy, 1, y2-oy+1);
+			this._mkDiv(cID,pID,x2, oy, 1, y2-oy+1);
 		}
 	}
 }
@@ -694,11 +694,11 @@ function jsGraphics(cnv, wnd)
 		this.ftSty = sty || Font.PLAIN;
 	};
 
-	this.drawPolyline = this.drawPolyLine = function(cID,x, y)
+	this.drawPolyline = this.drawPolyLine = function(cID,pID,x, y)
 	{
 		for (var i=x.length - 1; i;)
 		{--i;
-			this.drawLine(cID,x[i], y[i], x[i+1], y[i+1]);
+			this.drawLine(cID,pID,x[i], y[i], x[i+1], y[i+1]);
 		}
 	};
 
@@ -707,10 +707,10 @@ function jsGraphics(cnv, wnd)
 		this._mkDiv(x, y, w, h);
 	};
 
-	this.drawPolygon = function(cID,x, y)
+	this.drawPolygon = function(cID,pID,x, y)
 	{
-		this.drawPolyline(cID,x, y);
-		this.drawLine(cID,x[x.length-1], y[x.length-1], x[0], y[0]);
+		this.drawPolyline(cID,pID,x, y);
+		this.drawLine(cID,pID,x[x.length-1], y[x.length-1], x[0], y[0]);
 	};
 
 	this.drawEllipse = this.drawOval = function(x, y, w, h)
@@ -831,7 +831,7 @@ The intersection finding technique of this code could be improved
 by remembering the previous intertersection, and by using the slope.
 That could help to adjust intersections to produce a nice
 interior_extrema. */
-	this.fillPolygon = function(cID,array_x, array_y)
+	this.fillPolygon = function(cID,pID,array_x, array_y)
 	{
 	   
 		var i;
@@ -898,7 +898,7 @@ interior_extrema. */
 			polyInts.sort(_CompInt);
 			for(i = 0; i < ints; i+=2)
 				
-				this._mkDivFillPolygon(cID,polyInts[i], y, polyInts[i+1]-polyInts[i]+1, 1);				
+				this._mkDivFillPolygon(cID,pID,polyInts[i], y, polyInts[i+1]-polyInts[i]+1, 1);				
 		}		
 		
 	};
@@ -947,6 +947,7 @@ text both horizontally (e.g. right) and vertically within that rectangle */
 
 	this.clear = function()
 	{
+	   alert("aaa");
 		this.htm = "";
 		if(this.cnv) this.cnv.innerHTML = "";
 	};
