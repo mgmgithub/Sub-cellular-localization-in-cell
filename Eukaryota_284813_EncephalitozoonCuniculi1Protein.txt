@@ -1,3 +1,5 @@
 Eukaryota
 Protein Id	Score	Localization	Gene Ontology
 tr|Q8STW1|Q8STW1_ENCCU	20	nucleus	This is not needed
+tr|Q8STW1|Q8STW1_ENCCU	23	golgiApparatus	This is not needed
+tr|Q8STW1|Q8STW1_ENCCU	29	plasmaMembrane	This is not needed
