@@ -87,12 +87,19 @@
     } 
 	
 	//Showing score with little popup
-	function showHighlightScore(proteinID,proteinLocalization,colorCellCompartment)
+	function showHighlightScore(proteinID)
 	{	 		 
 		
 		ClearPopup();	 
 		selectCellPicture();	
-		highlightCompartments(proteinID, proteinLocalization,colorCellCompartment);		
+		
+		 for (var i = 0; i < scoreColorArray.length; i++) {
+		          var highlightColor = scoreColorArray[i];
+		 	 	  if(proteinID == highlightColor.proteinID)
+			 	  {		                   	  		
+				  	  highlightCompartments(highlightColor.proteinID, highlightColor.proteinLocalization,highlightColor.scoreColor);		
+				  }
+			 }
 		//Header
        	writeHeader('headerPP',proteinID);		
 		
@@ -141,35 +148,16 @@
                                                     var columnProtein = document.createElement("td");
                                                     columnProtein.setAttribute("id", "columnProtein" + i);					
                                 					var innerTag = document.createElement("p");
-                                					innerTag.setAttribute("id", "innnerText" + i);
-													
-													
-													var colorCellCompartment = "";                              									
-                                      								
-                                                	//Finding score color
-                                                    for (var k = 0; k < scoreColorArray.length; k++) {
-                                                             var colorScore = scoreColorArray[k];	
-															 
-															 if((scorePT.proteinID == colorScore.proteinID) && (scorePT.proteinLocalization == colorScore.proteinLocalization))
-															 {
-															    
-															    colorCellCompartment = colorScore.scoreColor;
-															  	break;
-															 }							
-                                                        								
-                                                        										   
-                                                    }		
-													
-													
+                                					innerTag.setAttribute("id", "innnerText" + i);				
     																					
-                                				    innerTag.setAttribute("onClick", "javaScript:showHighlightScore('"+scorePT.proteinID+"','"+ scorePT.proteinLocalization+"','"+ colorCellCompartment+"');");						
+                                				    innerTag.setAttribute("onClick", "javaScript:showHighlightScore('"+scorePT.proteinID+"');");						
                                 					innerTag.innerHTML = "<a href='#'>" + scorePT.proteinID + ":<b>" + scorePT.proteinScore+"</b></a>";
                                 					
                                 					columnProtein.appendChild(innerTag);                  
                                 					rowProtein.appendChild(columnProtein);
                                                     tblPopup.appendChild(rowProtein);		   
 										   
-                                  				  }
+                                  				 }
 									 }
 									else {
                                      //Showing score popup
