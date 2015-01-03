@@ -1,5 +1,0 @@
-Archaea
-Protein Id	Score	Localization	Gene Ontology
-tr|Q8STW1|Q8STW1_ENCCU	20	cytoplasm	This is not needed
-tr|Q8STW1|Q8STW1_ENCCU	23	extra-cellular	This is not needed
-tr|Q8STW1|Q8STW1_ENCCU	29	plasma membrana	This is not needed
