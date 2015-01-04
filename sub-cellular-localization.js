@@ -92,7 +92,8 @@
 	{	 		 
 		
 		ClearPopup();	 
-		selectCellPicture();			
+		selectCellPicture();	
+		console.log(scoreColorArray);		
 		 for (var i = 0; i < scoreColorArray.length; i++) {
 		          var highlightColor = scoreColorArray[i];
 		 	 	  if(proteinID == highlightColor.proteinID)
@@ -207,7 +208,7 @@
                   					 
                 	}               				 			
         						
-
+					
             popup.style.left = x;
             popup.style.top = y;			
             popup.style.visibility = 'visible';
@@ -3555,10 +3556,10 @@
 
 
 	    //Array containing localization colors
-	    var colorLocalizationArray = [
-      "#350000", "#590000", "#8f0000", "#BA1919", "#CC2900", "#E60000", "#FF0000", "#FF3300", "#FF3636", "#FF6633",
-      "#FF6600", "#F39114", "#FF9900", "#FF9933", "#FFCC00", "#FFCC33", "#FFFF00", "#FFFF33", "#FFFF66", "#FFFF99"
-      ];
+	   var colorLocalizationArray=[
+	   "#FFFF99","#FFFF66","#FFFF33","#FFFF00","#FFCC33","#FFCC00","#FF9933","#FF9900","#F39114","#FF6600",
+	   "#FF6633","#FF3636","#FF3300","#FF0000","#E60000","#CC2900","#BA1919","#8f0000","#590000","#350000"
+	   ];
 
 
 
@@ -3890,37 +3891,39 @@
               //Assign color to proteinscore
               for(var i=0; i<scoreProtein.length; i++){
               	var score = scoreProtein[i];
+    										
+    				
+    					if(score.proteinScore == 0)
+    					{
+    					 		proteinScoreColorArray.push({
+    						        proteinID:score.proteinID,
+                                    proteinLocalization: score.proteinLocalization,
+    								proteinScore: score.proteinScore,
+    								scoreColor: colorArray[0],
+    								percentScore: 0
+    								
+                                });	
+    					}
+    					else
+    					{				
+    				
+                        	for(var j=0;j<leftArray.length; j++){				       
+                           		if(score.proteinScore>leftArray[j] && score.proteinScore<=rightArray[j]){					
+          						proteinScoreColorArray.push({
+          						        proteinID:score.proteinID,
+                                          proteinLocalization: score.proteinLocalization,
+          								proteinScore: score.proteinScore,
+          								scoreColor: colorArray[j],
+          								percentScore: Math.round((100 / parseInt(scoreProtein[scoreProtein.length - 1].proteinScore)) * parseInt(score.proteinScore))
+          								
+                                      });				
+          							
+          								
+                        			}
+                        	 }	
+    				    }				
 					
-					if(score.proteinScore == 0)
-					{
-					 		proteinScoreColorArray.push({
-						        proteinID:score.proteinID,
-                                proteinLocalization: score.proteinLocalization,
-								proteinScore: score.proteinScore,
-								scoreColor: colorArray[0],
-								percentScore: 0
-								
-                            });	
-					}
-					else
-					{				
-				
-                    	for(var j=0;j<leftArray.length; j++){				       
-                       		if(score.proteinScore>leftArray[j] && score.proteinScore<=rightArray[j]){					
-      						proteinScoreColorArray.push({
-      						        proteinID:score.proteinID,
-                                      proteinLocalization: score.proteinLocalization,
-      								proteinScore: score.proteinScore,
-      								scoreColor: colorArray[j],
-      								percentScore: Math.round((100 / parseInt(scoreProtein[scoreProtein.length - 1].proteinScore)) * parseInt(score.proteinScore))
-      								
-                                  });				
-      							
-      								
-                    			}
-                    	 }	
-				  }
-              }
+               }
 			  
 			  return proteinScoreColorArray;	
 	
@@ -3951,12 +3954,15 @@
                                                     //Separate the line into words on encountering a tab and print each word
                                                     var arrayWords = fileLines[i].replace(/[\t]/g, ',').split(/[\,]+/g);                            
                         							
-                        							// Array containing protein scores
-                                                    scoreArray.push({
-                                                        proteinID: arrayWords[0],
-                        								proteinScore: arrayWords[1],
-                                                        proteinLocalization: arrayWords[2]
-                                                    });						
+                        							// Array containing protein scores													
+													if(arrayWords[1] >= 0)
+													{													
+                                                          scoreArray.push({
+                                                              proteinID: arrayWords[0],
+                              								proteinScore: arrayWords[1],
+                                                              proteinLocalization: arrayWords[2]
+                                                          });	
+													}					
                         							
                                                 }
                         																						  			
