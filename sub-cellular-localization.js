@@ -3,6 +3,7 @@
 	var cellType = "";
     var scoreProtein = [];	
 	var scoreColorArray = [];
+	var localizationColorArray = [];
 	var isNotOneProtein = false;
 
 	var cellPos = 0;
@@ -25,7 +26,7 @@
       "cytoplasm",
       "endoplasmic reticulum",
       "endoplasmic reticulum membrane",
-      "extra-cellular",
+      "secreted",
       "golgi apparatus",
       "golgi apparatus membrane",
       "mitochondrion",
@@ -43,17 +44,17 @@
 	//3 cell compartments for Archea
 	var archeaArray = [
       "cytoplasm",
-      "extra-cellular",
+      "secreted",
       "plasma membrane"];
 
 	//6 cell compartments for Bacteria
 	var bacteriaArray = [
         "cytoplasm",
-        "extra-cellular",
+        "secreted",
         "fimbrium",
         "outer membrane",
-        "periplasmic space",
-        "plasma membrane"
+        "periplasm",
+        "inner membrane"
         ];
         	   
 	    
@@ -91,15 +92,16 @@
 	{	 		 
 		
 		ClearPopup();	 
-		selectCellPicture();	
-		
+		selectCellPicture();			
 		 for (var i = 0; i < scoreColorArray.length; i++) {
 		          var highlightColor = scoreColorArray[i];
 		 	 	  if(proteinID == highlightColor.proteinID)
-			 	  {		                   	  		
+			 	  {		
+				  	 	                       	  		
 				  	  highlightCompartments(highlightColor.proteinID, highlightColor.proteinLocalization,highlightColor.scoreColor);		
-				  }
-			 }
+				  }		  
+			 }			 
+			 
 		//Header
        	writeHeader('headerPP',proteinID);		
 		
@@ -113,7 +115,14 @@
 			  divHeader.removeChild(divHeader.firstChild);
         }		
               var addHeader = document.createElement("h2");
-                  addHeader.innerHTML = cellType + " : " + proteinID; 
+			     if(proteinID == "")
+				 {
+				     addHeader.innerHTML = "Cell Type : "+ cellType;
+				 }
+				 else
+				 {
+                  	 addHeader.innerHTML = "Cell Type : "+ cellType + " , Protein ID : " + proteinID;
+				 } 
                   divHeader.appendChild(addHeader);
 	}
 	//cID = protein localization,pID = proteinID
@@ -126,23 +135,51 @@
             var y = myEvent.clientY;
 			
             x = parseInt(myEvent.clientX + document.body.scrollLeft);
-            y = parseInt(myEvent.clientY + document.body.scrollTop);
-			
-            var tblPopup = getPopupObject('tblLinkPopup');
+            y = parseInt(myEvent.clientY + document.body.scrollTop);			
+            
+			var headerPopup = getPopupObject('popHeader');
+			var detailPopup = getPopupObject('popDetail');
 
             //Remove all children before append
-            while (tblPopup.hasChildNodes()) {
+            while (detailPopup.hasChildNodes()) {
                 
-                  tblPopup.removeChild(tblPopup.firstChild);
-            }		 	
-													
+                  detailPopup.removeChild(detailPopup.firstChild);
+            }	
+			
+			//Remove all children before append
+                 while (headerPopup.hasChildNodes()) {                
+                  	  headerPopup.removeChild(headerPopup.firstChild);
+               }				 	
+					var isHeader = true;								
 					for (var i = 0; i < scoreProtein.length; i++) {                  					 
 							var scorePT =  scoreProtein[i];							    
 						 	         //Showing protein popup
 								 	 if(isNotOneProtein)
 									 {		
 									 		if (cID == scorePT.proteinLocalization)
-									 			{															                                                
+									 			{		
+														
+													if(isHeader)
+													{																
+																										      
+        												   //Header
+                                                			var rowHeaderProtein = document.createElement("tr");
+                                                            rowHeaderProtein.setAttribute("id", "rowHeaderProtein" + i);
+                                                            var columnHeaderProtein = document.createElement("td");
+                                                            columnHeaderProtein.setAttribute("id", "columnHeaderProtein" + i);					
+                                                            var innerHeaderTag = document.createElement("p");
+                                                            innerHeaderTag.setAttribute("id", "innerHeaderTag" + i);                              				    					
+                                                            innerHeaderTag.innerHTML = "<b>Localization = " + scorePT.proteinLocalization + "<br/>Protein ID : Score</b>";
+                                                                                					
+                                                            columnHeaderProtein.appendChild(innerHeaderTag);                  
+                                                            rowHeaderProtein.appendChild(columnHeaderProtein);
+                                                            headerPopup.appendChild(rowHeaderProtein);	
+															isHeader = false;
+													}	
+												
+												
+													
+													//Detail												                                                
                                                     var rowProtein = document.createElement("tr");
                                                     rowProtein.setAttribute("id", "rowProtein" + i);
                                                     var columnProtein = document.createElement("td");
@@ -155,15 +192,15 @@
                                 					
                                 					columnProtein.appendChild(innerTag);                  
                                 					rowProtein.appendChild(columnProtein);
-                                                    tblPopup.appendChild(rowProtein);		   
+                                                    detailPopup.appendChild(rowProtein);		   
 										   
                                   				 }
 									 }
 									else {
                                      //Showing score popup
 									  	if ((pID == scorePT.proteinID) && (cID == scorePT.proteinLocalization))	    						
-    									    {								 
-									 		 	 drawPopupScore(scorePT.proteinScore,tblPopup);						  
+    									    {												     					 
+									 		 	 drawPopupScore(scorePT.proteinScore,detailPopup);						  
                 						    	 break;		
 											}							 	
 									  }				 
@@ -171,7 +208,6 @@
                 	}               				 			
         						
 
-            
             popup.style.left = x;
             popup.style.top = y;			
             popup.style.visibility = 'visible';
@@ -180,7 +216,7 @@
     }
 	
 	
-	function drawPopupScore(proteinScore,tblPopup)
+	function drawPopupScore(proteinScore,detailPopup)
 	{
 	 		 var rowProtein = document.createElement("tr");
                  rowProtein.setAttribute("id", "rowProtein0");
@@ -188,13 +224,70 @@
                  columnProtein.setAttribute("id", "columnProtein0");				
                  columnProtein.innerHTML = "<p class='oneProtein' onmouseout='javaScript:ClearPopup();' >" + proteinScore + "</p>";
                  rowProtein.appendChild(columnProtein);
-                 tblPopup.appendChild(rowProtein);
+                 detailPopup.appendChild(rowProtein);
 	
 	}
 	
+	function drawTableDescription(proteinID)
+	{			 
+			//To clear all children
+			var divTableLoc = getPopupObject('tdTblDescriptionLoc');
+        		  	  while (divTableLoc.hasChildNodes()) {
+			  		  		divTableLoc.removeChild(divTableLoc.firstChild);
+					  }
+			 var divTableScore = getPopupObject('tdTblDescriptionScore');
+        		  	  while (divTableScore.hasChildNodes()) {
+			  		  		divTableScore.removeChild(divTableScore.firstChild);
+					  }
+			  var divbtnBack = getPopupObject('btnBack');
+				 while (divbtnBack.hasChildNodes()) {
+			  		  		divbtnBack.removeChild(divbtnBack.firstChild);
+					  }
+			 
+			  if(proteinID != "")
+			  {
+			     //To create go back botton
+			    
+				divbtnBack.innerHTML = "<input type='submit' value='Go Back' onclick=\"main();\">";
+			  
+			     var strScoreTable = "";
+				     strScoreTable += "<table><tr><td>Protein ID</td><td>Score</td><td>%</td></tr>";
+					 					 
+					 for (var i = 0; i < scoreColorArray.length; i++) {
+		          	 	  var scoreColor = scoreColorArray[i];
+						  
+						  if(proteinID==scoreColor.proteinID)
+						  {						  
+						  		strScoreTable += "<tr><td>"+ scoreColor.proteinID +"</td><td>"+scoreColor.proteinScore+"</td><td>"+scoreColor.percentScore+"</td></tr>";
+						  }						  
+						  
+				     }
+					 
+					 strScoreTable += "</table>"; 
+			     divTableScore.innerHTML = strScoreTable;
+				 						 
+			  }
+			  else
+			  {
+			     var strLocTable = "";
+				     strLocTable += "<table><tr><td>Localization</td><td>#proteins</td><td>%</td></tr>";
+					 					 
+					 for (var i = 0; i < localizationColorArray.length; i++) {
+		          	 	  var LocColor = localizationColorArray[i];
+						  strLocTable += "<tr><td>"+ LocColor.proteinLocalization +"</td><td>"+LocColor.numberProtein+"</td><td>"+LocColor.percentProtein+"</td></tr>";
+						  
+				     }
+					 
+					 strLocTable += "</table>"; 
+			     divTableLoc.innerHTML = strLocTable;
+			  }
+	
+	}
+	
+	
 	function drawCaptionColor(proteinID)
 	{
-	 		//To clear all captions
+			//To clear all captions
 			var divCaptionLoc = getPopupObject('localization');
         		  	  while (divCaptionLoc.hasChildNodes()) {
 			  		  		divCaptionLoc.removeChild(divCaptionLoc.firstChild);
@@ -209,29 +302,65 @@
 			     
 					  divCaptionScore.innerHTML = "<table><tr><td colspan='22'><b>Score : </b></td></tr>" 
                       + "<tr>"
-                        + "<td>Max</td>"
-                        + "<td bgcolor='#0A0A1F' height='5' width='18'></td>"
-                        + "<td bgcolor='#1F1F7A' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#2929CC' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#5454D6' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#335CAD' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#537CCF' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#008AE6' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#29A3CC' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#2EB8E6' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#4DDBFF' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#29A6A6' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#00CCA3' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#00CC7A' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#33CC33' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#66E066' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#00FF00' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#B8E62E' height='5' width='18'></td>"
+                        + "<td>Min</td>"
+						
+                        + "<td bgcolor='#DFFFDF' height='5' width='18'></td>"
+						+ "<td bgcolor='#DFFFDF' height='5' width='18'></td>"
+                        + "<td bgcolor='#C2FFA3' height='5' width='18'></td>"
                     	+ "<td bgcolor='#CCFF66' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#C2FFA3' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#DFFFDF' height='5' width='18'></td>"
-                    	+ "<td>Min</td>"
+                    	+ "<td bgcolor='#B8E62E' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#00FF00' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#66E066' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#33CC33' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#00CC7A' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#00CCA3' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#29A6A6' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#4DDBFF' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#2EB8E6' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#29A3CC' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#008AE6' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#537CCF' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#335CAD' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#5454D6' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#2929CC' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#1F1F7A' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#0A0A1F' height='5' width='18'></td>"
+						
+						
+                    	+ "<td>Max</td>"
                       + "</tr>"
+					  
+					  
+					  
+					  + "<tr>"					   
+                        + "<td></td>"   
+						+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>0</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>5</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>10</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>15</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>20</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>25</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>30</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>35</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>40</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>45</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>50</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>55</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>60</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>65</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>70</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>75</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>80</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>85</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>90</font></td>"
+						+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>95</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>100</font></td>"   
+						+ "<td><font size='2'>%</font></td>"                    	
+                      + "</tr>"
+					  
+					  
+					  
+					  
                       
                     + "</table>";
 					  
@@ -243,29 +372,59 @@
 					  
 					 divCaptionLoc.innerHTML = "<table><tr><td colspan='22'><b>Localization : </b></td></tr>"                     
                       + "<tr>"					   
-                        + "<td>Max</td>"
-                        + "<td bgcolor='#350000' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#590000' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#8f0000' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#BA1919' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#CC2900' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#E60000' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF0000' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF3300' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF3636' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF6633' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF6600' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#F39114' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF9900' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF9933' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FFCC00' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FFCC33' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FFFF00' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FFFF33' height='5' width='18'></td>"
+                        + "<td>Min</td>"
+                        + "<td bgcolor='#FFFF99' height='5' width='18'></td>"
+						+ "<td bgcolor='#FFFF99' height='5' width='18'></td>"
                     	+ "<td bgcolor='#FFFF66' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FFFF99' height='5' width='18'></td>"                       
-                    	+ "<td>Min</td>"
+                    	+ "<td bgcolor='#FFFF33' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#FFFF00' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#FFCC33' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#FFCC00' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#FF9933' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#FF9900' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#F39114' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#FF6600' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#FF6633' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#FF3636' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#FF3300' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#FF0000' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#E60000' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#CC2900' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#BA1919' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#8f0000' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#590000' height='5' width='18'></td>"
+                    	+ "<td bgcolor='#350000' height='5' width='18'></td>"                       
+                    	+ "<td>Max</td>"
                       + "</tr>"
+					  
+					 		  
+					   
+					  + "<tr>"					   
+                        + "<td></td>"   
+						+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>0</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>5</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>10</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>15</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>20</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>25</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>30</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>35</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>40</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>45</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>50</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>55</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>60</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>65</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>70</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>75</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>80</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>85</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>90</font></td>"
+						+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>95</font></td>"
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>100</font></td>"   
+						+ "<td><font size='2'>%</font></td>"                    	
+                      + "</tr>"
+					  
                       
                     + "</table>"; 
 			  }
@@ -276,6 +435,7 @@
     function highlightCompartments(proteinID, proteinLocalization,colorCellCompartment) {	
 	
 	    drawCaptionColor(proteinID);
+		drawTableDescription(proteinID);
 
 	    if (cellType == cellTypeArray[cellPos]) {
 
@@ -340,34 +500,26 @@
 		   	   	  .append("path")
 				  .attr("id", "cytosol_euka")
 				  .attr("fill", colorCellCompartment)
-				  .attr("d", "M 294.00,105.21 "
-           + "C 307.88,105.17 329.17,109.39 343.00,112.34 "
-             + "357.79,115.50 373.14,116.92 387.00,123.49 "
-             + "398.72,129.04 404.17,135.34 412.25,145.00 "
-             + "414.94,148.22 419.50,153.37 421.24,157.00 "
-             + "424.97,164.77 427.10,178.39 427.00,187.00 "
-             + "426.80,204.14 420.05,211.80 407.00,221.63 "
-             + "398.48,228.04 398.91,228.29 389.00,232.20 "
-             + "368.64,240.23 367.71,240.12 347.00,244.88 "
-             + "347.00,244.88 329.00,248.88 329.00,248.88 "
-             + "329.00,248.88 319.00,248.88 319.00,248.88 "
-             + "319.00,248.88 303.00,250.09 303.00,250.09 "
-             + "303.00,250.09 276.00,252.00 276.00,252.00 "
-             + "276.00,252.00 263.00,252.96 263.00,252.96 "
-             + "263.00,252.96 238.00,251.00 238.00,251.00 "
-             + "238.00,251.00 200.00,251.00 200.00,251.00 "
-             + "190.12,250.98 159.60,245.89 150.00,242.96 "
-             + "150.00,242.96 137.00,238.00 137.00,238.00 "
-             + "137.00,238.00 125.00,234.44 125.00,234.44 "
-             + "125.00,234.44 102.00,223.54 102.00,223.54 "
-             + "94.38,218.90 87.22,212.09 83.26,204.00 "
-             + "81.88,201.18 81.41,198.05 80.80,195.00 "
-             + "78.19,181.96 78.14,177.92 81.37,165.00 "
-             + "82.19,161.72 82.95,158.04 84.40,155.00 "
-             + "93.25,136.41 111.67,121.03 131.00,114.09 "
-             + "156.63,104.89 181.44,106.00 208.00,106.00 "
-             + "208.00,106.00 238.00,105.21 238.00,105.21 "
-             + "238.00,105.21 294.00,105.21 294.00,105.21 Z "
+				  .attr("d", "M 237.00,103.21 "
+           + "C 237.00,103.21 254.00,104.00 254.00,104.00 "
+             + "292.05,104.06 320.17,102.63 358.00,112.13 "
+             + "373.51,116.02 390.30,121.51 403.00,131.52 "
+             + "424.69,148.60 439.19,185.64 423.53,211.00 "
+             + "419.75,217.13 413.87,221.62 408.00,225.65 "
+             + "386.74,240.25 365.96,244.95 341.00,249.08 "
+             + "329.78,250.94 318.39,252.94 307.00,253.00 "
+             + "307.00,253.00 291.00,254.00 291.00,254.00 "
+             + "291.00,254.00 211.00,254.00 211.00,254.00 "
+             + "211.00,254.00 180.00,251.17 180.00,251.17 "
+             + "158.26,248.99 131.10,245.51 112.00,234.57 "
+             + "101.09,228.33 88.57,219.33 82.63,208.00 "
+             + "79.96,202.90 76.78,193.72 76.17,188.00 "
+             + "75.40,180.75 77.24,172.00 79.15,165.00 "
+             + "84.12,146.84 91.38,131.78 108.00,121.47 "
+             + "126.87,109.76 150.29,106.43 172.00,104.91 "
+             + "172.00,104.91 184.00,104.00 184.00,104.00 "
+             + "189.21,103.99 192.75,104.17 198.00,103.21 "
+             + "198.00,103.21 237.00,103.21 237.00,103.21 Z "
            + "M 162.13,121.47 "
            + "C 155.87,127.28 156.66,137.39 164.02,142.00 "
              + "168.33,144.70 175.90,145.30 181.00,145.68 "
@@ -381,9 +533,9 @@
              + "300.26,142.23 325.59,152.88 326.98,164.00 "
              + "327.79,170.52 318.15,175.30 315.64,184.00 "
              + "314.20,188.98 314.10,195.85 321.00,195.35 "
-             + "327.57,194.88 340.98,189.94 347.00,187.02 "
-             + "347.00,187.02 360.00,180.17 360.00,180.17 "
-             + "364.31,178.29 372.32,175.96 377.00,174.89 "
+             + "327.55,194.88 342.00,189.58 348.00,186.63 "
+             + "348.00,186.63 360.00,180.17 360.00,180.17 "
+             + "364.29,178.29 372.34,175.96 377.00,174.89 "
              + "377.00,174.89 394.72,172.40 394.72,172.40 "
              + "395.93,171.84 396.58,171.09 397.07,169.85 "
              + "400.32,161.73 390.58,151.04 385.00,146.46 "
@@ -402,9 +554,9 @@
              + "223.35,170.42 222.34,177.54 230.02,180.87 "
              + "234.74,182.92 235.87,181.93 240.00,186.00 "
              + "240.00,186.00 224.00,181.00 224.00,181.00 "
-             + "224.26,183.25 224.32,184.85 225.74,186.79 "
-             + "229.78,192.30 244.40,195.21 251.00,196.13 "
-             + "253.98,196.54 261.88,198.41 263.34,194.70 "
+             + "224.26,183.27 224.31,184.84 225.74,186.79 "
+             + "229.88,192.46 244.26,195.35 251.00,196.15 "
+             + "253.99,196.51 261.87,198.43 263.34,194.70 "
              + "265.98,188.05 253.57,189.49 251.11,188.84 "
              + "249.37,188.39 249.27,188.00 248.00,187.00 "
              + "248.00,187.00 265.00,188.00 265.00,188.00 "
@@ -418,32 +570,33 @@
              + "289.02,171.24 286.33,181.20 281.00,173.00 "
              + "287.18,172.70 294.62,170.33 298.26,164.91 Z "
            + "M 96.15,156.01 "
-           + "C 87.31,162.23 101.22,171.72 104.20,177.01 "
-             + "108.61,184.86 108.21,189.11 115.04,197.91 "
+           + "C 87.32,162.23 101.20,171.81 104.20,177.04 "
+             + "108.55,184.63 108.08,188.95 115.04,197.91 "
              + "117.58,201.18 119.86,202.53 123.00,205.09 "
-             + "135.12,214.98 138.80,216.15 153.00,221.99 "
+             + "136.23,215.89 137.47,215.60 153.00,221.99 "
              + "158.24,224.15 167.51,227.42 173.00,228.32 "
              + "175.14,228.67 180.87,228.19 178.83,224.57 "
              + "177.92,222.94 173.75,222.32 172.00,221.85 "
-             + "166.76,220.43 157.76,217.74 153.00,215.51 "
-             + "132.17,205.76 123.53,200.84 114.15,179.00 "
+             + "166.41,220.34 158.20,217.87 153.00,215.56 "
+             + "132.62,206.53 123.13,199.90 114.15,179.00 "
              + "112.56,175.29 110.99,171.97 110.04,168.00 "
              + "108.30,160.75 110.38,153.56 100.00,154.41 "
              + "98.45,154.90 97.57,155.00 96.15,156.01 Z "
            + "M 121.73,157.43 "
            + "C 119.88,154.23 113.61,154.82 111.74,159.13 "
-             + "109.27,164.83 115.04,179.65 117.76,185.00 "
-             + "123.16,195.66 133.88,206.01 145.00,210.65 "
+             + "109.51,164.28 114.70,178.93 117.03,184.00 "
+             + "121.89,194.61 134.26,206.16 145.00,210.65 "
              + "145.00,210.65 154.00,213.44 154.00,213.44 "
-             + "161.53,216.12 159.57,215.87 168.00,217.88 "
-             + "177.19,220.08 182.70,222.87 192.00,219.00 "
+             + "161.19,216.00 160.90,216.46 169.00,218.21 "
+             + "178.08,220.18 182.79,222.83 192.00,219.00 "
              + "191.60,217.31 191.27,215.61 190.44,214.06 "
-             + "186.01,205.75 179.95,214.26 170.00,211.83 "
-             + "163.40,210.21 145.38,202.22 140.00,198.37 "
-             + "136.66,195.98 130.14,189.26 127.46,186.00 "
-             + "122.22,179.60 117.25,173.27 121.00,165.00 "
+             + "186.03,205.77 180.05,214.22 170.00,211.83 "
+             + "163.27,210.23 145.46,202.28 140.00,198.37 "
+             + "136.60,195.93 130.21,189.31 127.44,186.00 "
+             + "122.13,179.67 117.25,173.26 121.00,165.00 "
              + "121.01,167.69 120.89,170.39 121.63,173.00 "
-             + "127.55,193.83 156.85,211.18 178.00,209.96 "
+             + "124.00,181.32 132.31,191.85 139.17,196.90 "
+             + "148.10,203.47 166.76,210.61 178.00,209.96 "
              + "180.84,209.79 186.18,208.32 182.58,204.63 "
              + "178.98,200.95 171.70,202.47 167.00,201.68 "
              + "161.35,200.73 152.71,195.74 148.00,192.43 "
@@ -453,14 +606,14 @@
              + "121.80,161.96 122.98,159.58 121.73,157.43 Z "
            + "M 152.10,176.67 "
            + "C 158.84,182.84 169.31,184.07 178.00,182.38 "
-             + "187.68,180.50 192.96,170.96 184.81,163.68 "
-             + "177.68,157.30 165.26,155.13 156.00,156.39 "
-             + "145.47,159.80 144.27,169.51 152.10,176.67 Z "
+             + "187.71,180.50 192.97,170.80 184.81,163.76 "
+             + "177.35,157.32 165.59,155.09 156.00,156.39 "
+            + "145.47,159.80 144.27,169.51 152.10,176.67 Z "
            + "M 254.98,205.88 "
            + "C 258.09,205.60 261.87,202.83 258.40,200.01 "
              + "256.73,198.66 248.57,198.03 246.00,197.54 "
-             + "239.18,196.23 232.82,193.34 227.04,189.54 "
-             + "223.24,187.04 219.59,182.80 217.13,179.00 "
+             + "239.42,196.28 231.56,192.89 226.09,189.04 "
+             + "223.05,186.90 219.16,182.14 217.13,179.00 "
              + "215.86,177.05 214.22,173.02 211.87,172.34 "
              + "208.57,171.37 206.48,175.33 206.16,178.00 "
              + "204.70,190.48 221.35,192.00 226.00,200.00 "
@@ -475,15 +628,15 @@
              + "83.04,177.33 87.12,185.02 91.73,183.34 Z "
            + "M 106.26,185.00 "
            + "C 103.72,179.79 104.12,176.07 98.00,175.00 "
-             + "98.16,181.99 103.81,198.82 111.17,201.08 "
-             + "112.81,201.67 113.50,201.26 115.00,201.08 "
-             + "115.00,201.08 106.26,185.00 106.26,185.00 Z "
+             + "98.16,181.92 103.67,197.57 110.17,200.89 "
+             + "112.16,201.76 113.04,201.33 115.00,200.89 "
+             + "115.00,200.89 106.26,185.00 106.26,185.00 Z "
            + "M 302.98,194.56 "
            + "C 306.23,192.38 308.72,190.23 308.84,186.02 "
              + "308.88,184.22 308.31,181.62 306.04,181.61 "
-             + "302.77,181.58 301.94,186.67 294.99,191.48 "
-             + "289.19,195.49 283.88,197.45 277.00,198.74 "
-             + "274.55,199.20 265.73,200.07 264.31,201.02 "
+             + "302.81,181.59 302.02,186.50 294.99,191.56 "
+             + "289.21,195.72 282.94,197.70 276.00,198.92 "
+             + "273.65,199.33 265.74,200.07 264.31,201.02 "
              + "261.91,202.63 262.09,205.46 262.00,208.00 "
              + "262.00,208.00 285.00,205.00 285.00,205.00 "
              + "285.00,205.00 285.00,207.00 285.00,207.00 "
@@ -494,32 +647,34 @@
              + "309.12,194.00 293.00,204.00 293.00,204.00 "
              + "293.00,204.00 292.00,203.00 292.00,203.00 "
              + "296.39,198.10 297.88,197.99 302.98,194.56 Z "
-           + "M 281.00,189.78 "
-           + "C 275.08,191.62 271.61,190.53 269.15,191.60 "
-             + "266.50,192.75 266.42,194.51 266.00,196.89 "
-             + "266.00,196.89 278.00,196.89 278.00,196.89 "
-             + "285.03,195.72 296.78,188.60 301.00,183.00 "
-             + "293.71,181.61 287.78,187.67 281.00,189.78 Z "
+           + "M 282.00,189.56 "
+           + "C 275.06,191.68 271.62,190.52 269.15,191.60 "
+             + "266.50,192.75 266.42,194.51 266.00,196.81 "
+             + "269.11,197.00 276.34,197.19 279.00,196.81 "
+             + "284.78,195.36 296.01,188.50 301.00,185.00 "
+             + "301.00,185.00 301.00,183.00 301.00,183.00 "
+             + "293.38,181.55 289.27,187.33 282.00,189.56 Z "
            + "M 358.00,203.69 "
-           + "C 352.11,206.93 343.67,209.75 339.10,214.18 "
-             + "329.37,223.63 337.65,233.04 349.00,232.74 "
-             + "355.56,232.56 363.25,228.89 369.00,225.98 "
-             + "380.20,220.29 387.61,216.66 396.94,207.71 "
-             + "399.66,205.11 400.53,203.70 401.22,200.00 "
+           + "C 351.80,207.10 344.17,209.51 339.10,214.30 "
+             + "329.10,223.75 337.85,232.74 349.00,232.82 "
+             + "355.12,232.86 362.63,229.44 368.00,226.75 "
+             + "380.13,220.69 386.85,217.43 396.94,207.72 "
+             + "399.66,205.10 400.53,203.71 401.22,200.00 "
              + "402.84,191.31 396.36,188.89 389.00,188.46 "
              + "378.17,189.47 367.44,198.50 358.00,203.69 Z "
-           + "M 105.00,206.99 "
-           + "C 112.53,215.09 124.44,226.35 136.00,227.00 "
-             + "136.00,227.00 131.00,220.00 131.00,220.00 "
+           + "M 110.09,203.00 "
+           + "C 105.65,198.21 104.40,193.44 98.00,192.00 "
+             + "98.43,194.32 98.97,197.93 99.92,200.00 "
+             + "103.06,206.88 114.59,216.48 121.00,220.66 "
+             + "125.84,223.81 130.08,227.26 136.00,226.00 "
+             + "136.00,226.00 131.00,220.00 131.00,220.00 "
              + "138.59,225.36 145.10,228.14 154.00,230.82 "
              + "156.10,231.45 162.62,232.75 161.26,228.22 "
              + "160.40,225.36 151.79,223.27 149.00,222.19 "
-             + "142.18,219.55 135.94,216.21 130.04,211.86 "
-             + "124.24,207.58 122.30,204.15 115.00,202.00 "
-             + "117.01,210.46 119.99,211.26 126.00,217.00 "
-             + "126.00,217.00 111.17,204.00 111.17,204.00 "
-             + "111.17,204.00 99.00,191.00 99.00,191.00 "
-             + "96.54,197.41 100.83,202.50 105.00,206.99 Z "
+             + "141.98,219.47 135.05,215.73 129.00,211.24 "
+             + "123.24,206.96 122.35,204.17 115.00,202.00 "
+             + "117.25,211.45 122.95,213.88 130.00,220.00 "
+             + "121.45,213.17 118.07,211.61 110.09,203.00 Z "
            + "M 248.06,216.26 "
            + "C 251.69,217.80 261.06,218.09 264.96,216.94 "
              + "267.34,216.24 271.20,213.59 268.22,210.99 "
@@ -1832,49 +1987,49 @@
 		   	   	  .append("path")
 				  .attr("id", "plasmaMem_euka")
 				  .attr("fill", colorCellCompartment)				 
-				  .attr("d", "M 202.00,96.21 "
-           + "C 202.00,96.21 216.00,97.00 216.00,97.00 "
-             + "216.00,97.00 284.00,97.00 284.00,97.00 "
-             + "284.00,97.00 296.00,97.91 296.00,97.91 "
-             + "296.00,97.91 320.00,99.00 320.00,99.00 "
-             + "326.80,99.08 341.95,101.61 349.00,103.00 "
-             + "371.18,107.37 393.58,114.41 410.99,129.44 "
-             + "429.12,145.09 438.27,168.38 438.00,192.00 "
-             + "437.94,196.87 437.32,200.43 435.54,205.00 "
-             + "429.63,220.11 416.80,231.25 403.00,239.13 "
-             + "390.41,246.31 367.43,252.71 353.00,255.60 "
-             + "325.11,261.18 297.36,262.96 269.00,263.00 "
-             + "269.00,263.00 252.00,263.96 252.00,263.96 "
-             + "252.00,263.96 236.00,263.96 236.00,263.96 "
-             + "236.00,263.96 224.00,263.00 224.00,263.00 "
-             + "224.00,263.00 197.00,261.17 197.00,261.17 "
-             + "197.00,261.17 178.00,259.71 178.00,259.71 "
-             + "178.00,259.71 148.00,253.65 148.00,253.65 "
-             + "125.74,248.61 107.88,243.71 90.00,228.56 "
-             + "81.46,221.32 73.68,209.89 70.76,199.00 "
-             + "63.49,171.91 75.52,136.48 98.00,119.76 "
-             + "111.74,109.54 137.01,100.90 154.00,98.27 "
-             + "154.00,98.27 176.00,96.21 176.00,96.21 "
-             + "176.00,96.21 202.00,96.21 202.00,96.21 Z "
-           + "M 189.00,104.00 "
-           + "C 164.04,104.04 129.46,108.15 108.00,121.47 "
-             + "101.26,125.65 93.44,133.35 89.10,140.00 "
-             + "82.85,149.57 76.49,171.47 76.04,183.00 "
-             + "75.73,190.92 78.98,201.03 82.63,208.00 "
-             + "88.57,219.33 101.09,228.33 112.00,234.57 "
-             + "131.99,246.01 158.39,248.98 181.00,251.17 "
-             + "181.00,251.17 211.00,254.00 211.00,254.00 "
-             + "211.00,254.00 291.00,254.00 291.00,254.00 "
+				  .attr("d", "M 211.00,93.21 "
+           + "C 211.00,93.21 225.00,94.00 225.00,94.00 "
+             + "225.00,94.00 241.00,94.00 241.00,94.00 "
+             + "277.59,94.00 307.41,92.90 344.00,98.58 "
+             + "365.66,101.94 390.38,107.89 408.00,121.50 "
+             + "426.12,135.50 440.89,160.70 441.00,184.00 "
+             + "441.00,184.00 441.00,194.00 441.00,194.00 "
+             + "440.92,200.26 439.33,206.33 436.68,212.00 "
+             + "431.34,223.40 420.64,233.13 410.00,239.55 "
+             + "395.11,248.53 378.73,253.34 362.00,257.47 "
+             + "345.26,261.61 313.90,266.97 297.00,267.00 "
+             + "297.00,267.00 281.00,267.00 281.00,267.00 "
+             + "281.00,267.00 266.00,268.00 266.00,268.00 "
+             + "266.00,268.00 248.00,268.00 248.00,268.00 "
+             + "248.00,268.00 233.00,267.00 233.00,267.00 "
+             + "233.00,267.00 214.00,266.09 214.00,266.09 "
+             + "190.17,264.46 169.49,262.61 146.00,257.42 "
+             + "126.61,253.14 103.19,245.66 88.01,232.56 "
+             + "80.83,226.36 72.46,214.95 69.06,206.00 "
+             + "57.59,175.77 69.29,135.37 95.00,115.90 "
+             + "108.88,105.39 131.72,97.49 149.00,95.28 "
+             + "149.00,95.28 169.00,93.21 169.00,93.21 "
+             + "169.00,93.21 211.00,93.21 211.00,93.21 Z "
+           + "M 183.00,104.00 "
+           + "C 183.00,104.00 171.00,104.91 171.00,104.91 "
+             + "149.59,106.41 125.36,109.95 107.00,121.86 "
+             + "100.77,125.91 94.44,131.88 90.22,138.00 "
+             + "82.73,148.88 75.13,173.77 76.09,187.00 "
+             + "76.52,192.87 79.68,202.75 82.37,208.00 "
+             + "87.64,218.29 100.10,227.87 110.00,233.57 "
+             + "132.03,246.26 157.20,248.77 182.00,251.17 "
+             + "182.00,251.17 213.00,254.00 213.00,254.00 "
+             + "213.00,254.00 291.00,254.00 291.00,254.00 "
              + "291.00,254.00 307.00,253.00 307.00,253.00 "
-             + "318.39,252.94 329.78,250.94 341.00,249.08 "
-             + "366.21,244.91 387.63,239.84 409.00,224.96 "
-             + "414.53,221.12 419.96,216.79 423.53,211.00 "
-             + "439.34,185.41 424.37,147.47 402.00,130.76 "
-             + "388.49,120.67 372.16,115.65 356.00,111.63 "
-             + "318.01,102.17 289.89,104.44 252.00,104.00 "
-             + "252.00,104.00 237.00,103.14 237.00,103.14 "
-             + "237.00,103.14 199.00,103.14 199.00,103.14 "
-             + "194.11,103.99 193.94,103.99 189.00,104.00 Z")
+             + "318.45,252.95 329.72,250.95 341.00,249.08 "
+             + "366.34,244.88 388.58,239.68 410.00,224.56 "
+             + "414.91,221.10 419.55,217.04 422.90,212.00 "
+             + "440.23,185.91 424.11,146.67 401.00,129.76 "
+             + "387.80,120.09 371.64,115.54 356.00,111.63 "
+             + "317.50,102.00 288.60,104.45 250.00,104.00 "
+             + "250.00,104.00 235.00,103.14 235.00,103.14 "
+             + "235.00,103.14 198.00,103.14 198.00,103.14 "
+             + "191.93,104.16 188.99,103.99 183.00,104.00 Z")
 				  .attr("onmouseover", "javaScript:mouseEventHandler(event,'" + proteinLocalization + "','" + proteinID + "');");
 
 	        }
@@ -3024,82 +3179,87 @@
 		   	   	  .append("path")
 				  .attr("id", "cytoplasm_arch")
 				  .attr("fill", colorCellCompartment)
-				  .attr("d", "M 211.00,144.21"
-             + "C 211.00,144.21 223.00,144.96 223.00,144.96 "
-             + "223.00,144.96 234.00,144.96 234.00,144.96 "
-             + "234.00,144.96 247.00,145.99 247.00,145.99 "
-             + "247.00,145.99 266.00,145.00 266.00,145.00 "
-             + "266.00,145.00 281.00,146.00 281.00,146.00 "
-             + "281.00,146.00 331.00,146.00 331.00,146.00 "
-             + "331.00,146.00 341.00,146.91 341.00,146.91 "
-             + "355.67,147.92 370.71,149.30 384.00,156.26 "
-             + "400.19,164.75 413.56,182.25 413.99,201.00 "
-             + "414.30,214.87 406.82,223.62 396.00,231.41 "
-             + "390.86,235.11 373.83,244.56 368.00,246.21 "
-             + "368.00,246.21 341.00,250.08 341.00,250.08 "
-             + "341.00,250.08 307.00,254.09 307.00,254.09 "
-             + "307.00,254.09 297.00,255.00 297.00,255.00 "
-             + "297.00,255.00 268.00,256.00 268.00,256.00 "
-             + "268.00,256.00 253.00,255.00 253.00,255.00 "
-             + "238.21,254.98 210.54,252.84 196.00,250.56 "
-             + "196.00,250.56 177.00,246.42 177.00,246.42 "
-             + "158.15,242.26 148.67,240.80 131.00,231.74 "
-             + "107.89,219.90 89.09,204.46 93.75,176.00 "
-             + "95.09,167.88 97.35,162.95 104.01,157.68 "
-             + "117.45,147.06 141.49,146.78 158.00,144.21 "
-             + "158.00,144.21 211.00,144.21 211.00,144.21 Z "
-           + "M 181.00,179.33 "
-           + "C 179.06,177.92 175.79,174.74 173.21,175.45 "
-             + "169.32,176.52 168.28,184.66 168.00,188.00 "
-             + "165.52,186.65 161.34,184.25 158.43,185.59 "
-             + "154.89,187.22 155.74,196.99 157.01,199.96 "
-             + "159.09,204.85 165.38,207.94 170.00,210.00 "
-             + "170.00,210.00 178.00,202.00 178.00,202.00 "
-             + "178.00,202.00 193.09,215.78 193.09,215.78 "
-             + "196.80,217.53 198.99,214.86 202.00,214.73 "
-             + "204.46,214.62 206.34,216.13 209.00,216.41 "
-             + "209.00,216.41 216.00,216.41 216.00,216.41 "
-             + "221.35,216.77 223.93,220.97 231.00,220.92 "
-             + "237.66,220.87 240.35,216.79 244.28,217.13 "
-             + "248.09,217.46 252.92,222.15 264.00,220.71 "
-             + "275.55,219.21 276.15,215.31 281.00,213.01 "
-             + "281.00,213.01 293.00,210.13 293.00,210.13 "
-             + "294.78,209.89 296.13,209.47 298.00,210.13 "
-             + "300.80,210.55 312.06,220.03 320.78,211.72 "
-             + "322.37,210.21 322.99,208.86 324.00,207.00 "
-             + "327.19,208.19 331.11,209.17 333.91,210.99 "
-             + "337.15,213.09 340.37,217.94 344.87,216.36 "
-             + "349.55,214.71 348.26,208.48 350.17,205.11 "
-             + "352.75,200.57 357.51,201.01 362.00,201.00 "
-             + "362.00,197.43 362.74,189.30 360.26,186.72 "
-             + "357.80,184.16 351.33,183.75 348.00,182.65 "
-             + "344.76,181.58 342.81,179.63 339.00,180.32 "
-             + "335.81,180.90 333.66,183.20 331.00,184.10 "
-             + "328.13,185.09 325.90,184.25 323.00,184.10 "
-             + "316.50,183.74 309.71,186.07 304.00,189.00 "
-             + "304.31,187.68 304.70,186.40 304.71,185.02 "
-             + "304.76,175.26 293.69,181.42 289.00,182.91 "
-             + "283.45,184.67 277.19,183.66 271.00,185.96 "
-             + "265.58,187.99 261.99,192.02 258.00,196.00 "
+				  .attr("d", "M 216.00,143.21 "
+           + "C 216.00,143.21 233.00,144.00 233.00,144.00 "
+             + "233.00,144.00 258.00,144.00 258.00,144.00 "
+            + "258.00,144.00 270.00,144.95 270.00,144.95 "
+             + "270.00,144.95 288.00,144.95 288.00,144.95 "
+             + "288.00,144.95 303.00,144.00 303.00,144.00 "
+             + "329.79,143.96 361.74,142.74 386.00,155.63 "
+             + "405.99,166.25 421.96,194.98 411.33,217.00 "
+             + "407.30,225.36 403.43,228.43 396.00,233.56 "
+             + "382.00,243.23 363.51,247.45 347.00,250.42 "
+             + "329.76,253.53 312.52,255.80 295.00,256.00 "
+             + "295.00,256.00 282.00,257.00 282.00,257.00 "
+             + "282.00,257.00 258.00,257.00 258.00,257.00 "
+             + "258.00,257.00 248.00,256.04 248.00,256.04 "
+             + "248.00,256.04 232.00,256.04 232.00,256.04 "
+             + "212.78,255.97 193.63,251.54 175.00,247.23 "
+             + "175.00,247.23 164.00,245.10 164.00,245.10 "
+             + "153.90,242.64 137.10,237.01 128.00,232.22 "
+             + "118.65,227.30 106.81,219.62 100.63,211.00 "
+             + "89.85,195.94 87.62,169.39 103.09,156.53 "
+             + "116.13,145.68 140.63,145.76 157.00,143.21 "
+             + "157.00,143.21 216.00,143.21 216.00,143.21 Z "
+           + "M 183.00,181.27 "
+           + "C 178.83,178.64 178.40,176.55 173.00,174.00 "
+             + "167.73,182.30 170.09,179.42 168.00,188.00 "
+             + "165.69,186.69 161.02,183.73 158.31,184.70 "
+             + "154.87,185.94 155.70,197.23 156.85,199.98 "
+             + "158.84,204.75 165.60,207.57 170.00,210.00 "
+             + "170.00,210.00 172.00,206.00 172.00,206.00 "
+             + "176.63,206.14 177.62,205.42 179.00,201.00 "
+             + "182.31,204.31 185.39,207.34 188.34,211.00 "
+             + "189.80,212.82 191.81,215.88 194.09,216.64 "
+             + "197.26,217.69 200.66,214.75 203.00,213.00 "
+             + "209.47,220.12 212.50,215.07 218.00,216.06 "
+             + "222.88,216.93 223.93,221.99 233.00,220.87 "
+             + "238.39,220.20 240.62,216.68 243.42,216.51 "
+             + "246.65,216.31 249.61,220.59 258.00,220.96 "
+             + "262.68,221.17 269.86,220.22 273.90,217.78 "
+             + "277.05,215.87 277.64,213.68 280.21,212.60 "
+             + "282.26,211.74 285.56,212.19 288.00,211.73 "
+             + "288.00,211.73 295.00,209.30 295.00,209.30 "
+             + "300.43,207.99 301.06,211.62 305.09,213.69 "
+             + "306.97,214.65 308.92,214.87 311.00,214.96 "
+             + "318.23,215.27 320.63,213.25 324.00,207.00 "
+             + "326.40,207.80 333.05,209.76 334.79,210.93 "
+             + "337.78,212.93 339.69,217.96 343.96,217.04 "
+             + "350.60,215.60 347.98,206.37 350.02,203.31 "
+             + "352.10,200.20 358.62,201.00 362.00,201.00 "
+             + "362.00,201.00 361.43,187.43 361.43,187.43 "
+             + "361.43,187.43 359.71,185.81 359.71,185.81 "
+             + "359.71,185.81 349.91,182.96 349.91,182.96 "
+             + "349.91,182.96 347.00,184.00 347.00,184.00 "
+             + "346.23,183.02 345.77,182.18 344.78,181.32 "
+             + "338.50,175.86 334.72,184.40 330.00,185.10 "
+             + "330.00,185.10 323.00,184.09 323.00,184.09 "
+             + "317.22,183.93 308.89,186.01 304.00,189.00 "
+             + "304.32,187.68 304.72,186.38 304.76,185.00 "
+             + "305.12,173.31 291.64,183.07 287.00,183.79 "
+             + "280.15,184.86 274.10,183.39 267.00,187.84 "
+             + "263.59,189.98 261.11,193.43 258.00,196.00 "
              + "258.00,196.00 258.00,189.00 258.00,189.00 "
              + "258.00,189.00 241.00,191.00 241.00,191.00 "
              + "241.00,191.00 244.00,187.00 244.00,187.00 "
-             + "237.41,183.87 233.92,182.95 233.00,175.00 "
-             + "229.69,175.44 226.35,176.29 223.00,176.05 "
-             + "216.47,175.58 203.51,170.62 199.02,178.21 "
-             + "197.52,180.75 198.27,184.20 198.29,187.00 "
-             + "198.29,187.00 197.00,198.00 197.00,198.00 "
-             + "191.11,194.98 183.12,194.84 180.00,189.00 "
-             + "186.89,190.29 187.83,192.97 195.00,191.00 "
-             + "191.39,182.16 187.91,184.35 181.00,179.33 Z "
-           + "M 211.00,178.00 "
-           + "C 211.00,178.00 211.00,180.00 211.00,180.00 "
-             + "211.00,180.00 202.00,182.00 202.00,182.00 "
-             + "205.23,178.60 206.42,178.43 211.00,178.00 Z "
-           + "M 177.00,185.00 "
-           + "C 177.00,185.00 173.00,186.00 173.00,186.00 "
+             + "233.85,183.23 233.10,183.03 233.00,175.00 "
+             + "233.00,175.00 224.00,176.61 224.00,176.61 "
+             + "220.71,176.54 202.87,169.36 198.06,179.10 "
+             + "196.49,182.31 198.71,184.63 198.83,187.42 "
+             + "198.83,187.42 197.00,198.00 197.00,198.00 "
+             + "184.77,192.16 185.74,194.85 182.08,193.26 "
+             + "178.62,191.77 179.04,189.08 180.63,188.69 "
+             + "182.26,188.29 185.43,190.63 187.00,191.16 "
+             + "190.53,192.85 191.63,192.39 195.00,191.16 "
+             + "192.15,181.45 189.14,185.13 183.00,181.27 Z "
+           + "M 213.00,180.00 "
+           + "C 208.13,180.62 205.54,182.72 201.00,181.00 "
+             + "205.47,178.57 208.48,176.69 213.00,180.00 Z "
+           + "M 176.00,181.00 "
+           + "C 176.00,181.00 177.00,185.00 177.00,185.00 "
+             + "177.00,185.00 173.00,186.00 173.00,186.00 "
              + "173.00,186.00 174.00,181.00 174.00,181.00 "
-             + "174.00,181.00 177.00,185.00 177.00,185.00 Z "
+             + "174.00,181.00 176.00,181.00 176.00,181.00 Z "
            + "M 219.00,182.00 "
            + "C 219.00,182.00 220.00,183.00 220.00,183.00 "
              + "220.00,183.00 220.00,185.00 220.00,185.00 "
@@ -3107,76 +3267,89 @@
              + "216.00,187.00 217.00,182.00 217.00,182.00 "
              + "217.00,182.00 219.00,182.00 219.00,182.00 Z "
            + "M 211.00,184.00 "
-           + "C 211.00,184.00 213.00,190.00 213.00,190.00 "
-             + "213.00,190.00 209.00,187.00 209.00,187.00 "
-             + "209.00,187.00 205.00,199.00 205.00,199.00 "
-             + "205.00,199.00 203.00,199.00 203.00,199.00 "
-             + "201.47,191.42 203.90,186.90 211.00,184.00 Z "
-           + "M 298.00,192.00 "
-           + "C 293.83,189.04 295.95,186.79 299.00,184.00 "
-             + "299.00,184.00 298.00,192.00 298.00,192.00 Z "
+           + "C 211.00,184.00 213.00,191.00 213.00,191.00 "
+             + "213.00,191.00 207.00,187.00 207.00,187.00 "
+            + "207.00,187.00 205.00,199.00 205.00,199.00 "
+             + "200.17,195.13 202.87,186.46 211.00,184.00 Z "
+           + "M 300.00,184.00 "
+           + "C 299.64,188.68 299.23,189.58 296.00,193.00 "
+             + "294.83,187.94 294.58,185.73 300.00,184.00 Z "
            + "M 344.00,188.00 "
-           + "C 344.00,188.00 336.00,187.00 336.00,187.00 "
-             + "339.98,185.38 340.71,185.09 344.00,188.00 Z "
-           + "M 231.00,188.00 "
-           + "C 228.20,191.81 220.41,196.09 216.00,198.00 "
-             + "217.56,188.68 222.62,188.08 231.00,188.00 Z "
+           + "C 344.00,188.00 336.00,188.00 336.00,188.00 "
+             + "339.41,184.17 340.59,184.17 344.00,188.00 Z "
+           + "M 217.02,192.41 "
+           + "C 219.89,188.08 228.05,187.09 232.00,190.00 "
+             + "221.47,190.37 227.73,193.77 216.00,198.00 "
+             + "216.07,196.13 215.94,194.05 217.02,192.41 Z "
            + "M 288.00,189.00 "
-           + "C 286.37,193.73 285.35,194.61 281.00,197.00 "
+           + "C 286.68,193.93 285.68,194.94 281.00,197.00 "
              + "281.00,197.00 277.00,189.00 277.00,189.00 "
              + "277.00,189.00 288.00,189.00 288.00,189.00 Z "
+           + "M 322.97,191.47 "
+           + "C 324.41,193.49 324.89,201.92 315.00,198.38 "
+             + "315.00,198.38 309.00,196.00 309.00,196.00 "
+             + "311.54,187.87 321.28,189.10 322.97,191.47 Z "
            + "M 166.00,201.00 "
-           + "C 161.24,197.38 160.35,195.93 160.00,190.00 "
-             + "165.35,193.09 165.70,195.04 166.00,201.00 Z "
-           + "M 312.22,191.67 "
-           + "C 314.63,189.95 319.99,189.18 322.25,191.67 "
-             + "324.37,193.87 323.65,198.39 318.96,198.76 "
-             + "317.71,198.86 316.21,198.55 315.00,198.24 "
-             + "312.91,197.71 310.97,196.86 309.00,196.00 "
-             + "309.99,194.26 310.52,193.00 312.22,191.67 Z "
-           + "M 358.00,196.00 "
-           + "C 358.00,196.00 352.00,197.00 352.00,197.00 "
-             + "352.68,192.90 352.93,192.77 356.00,190.00 "
-             + "356.00,190.00 358.00,196.00 358.00,196.00 Z "
+           + "C 160.91,198.19 160.19,195.56 160.00,190.00 "
+             + "166.50,191.98 165.98,195.02 166.00,201.00 Z "
+           + "M 357.00,190.00 "
+           + "C 357.00,190.00 358.00,196.00 358.00,196.00 "
+             + "358.00,196.00 352.00,197.00 352.00,197.00 "
+             + "352.38,192.43 352.61,191.63 357.00,190.00 Z "
            + "M 277.00,199.00 "
            + "C 277.00,199.00 272.00,199.00 272.00,199.00 "
-             + "272.00,199.00 273.00,192.00 273.00,192.00 "
-             + "273.00,192.00 277.00,199.00 277.00,199.00 Z "
+             + "272.00,199.00 272.00,191.00 272.00,191.00 "
+             + "272.00,191.00 277.00,199.00 277.00,199.00 Z "
            + "M 254.00,193.00 "
-           + "C 254.00,193.00 253.00,197.00 253.00,197.00 "
-             + "253.00,197.00 249.00,193.00 249.00,193.00 "
+           + "C 254.00,193.00 253.00,198.00 253.00,198.00 "
+             + "253.00,198.00 249.00,193.00 249.00,193.00 "
              + "249.00,193.00 254.00,193.00 254.00,193.00 Z "
            + "M 268.00,202.00 "
-           + "C 268.00,202.00 277.00,204.00 277.00,204.00 "
-             + "269.64,205.25 267.95,204.28 261.00,202.00 "
-             + "261.00,202.00 266.00,195.00 266.00,195.00 "
-             + "266.00,195.00 268.00,202.00 268.00,202.00 Z "
+           + "C 268.00,202.00 278.00,204.00 278.00,204.00 "
+             + "270.03,205.91 268.52,203.71 261.00,202.00 "
+             + "261.00,202.00 266.00,194.00 266.00,194.00 "
+             + "266.00,194.00 268.00,202.00 268.00,202.00 Z "
+           + "M 234.00,196.00 "
+           + "C 232.87,198.71 232.87,198.45 230.00,199.00 "
+             + "230.00,199.00 234.00,196.00 234.00,196.00 Z "
+           + "M 248.00,199.00 "
+           + "C 248.00,199.00 248.00,201.00 248.00,201.00 "
+             + "243.96,201.54 243.69,200.90 243.00,197.00 "
+             + "243.00,197.00 248.00,199.00 248.00,199.00 Z "
            + "M 197.00,211.00 "
-           + "C 190.62,207.27 187.93,204.19 184.00,198.00 "
-             + "193.96,198.90 196.96,201.12 197.00,211.00 Z "
-           + "M 247.00,201.00 "
-           + "C 247.00,201.00 244.00,198.00 244.00,198.00 "
-             + "244.00,198.00 247.00,201.00 247.00,201.00 Z "
-           + "M 201.00,203.00 "
-           + "C 201.00,203.00 212.00,199.00 212.00,199.00 "
-             + "211.11,204.75 205.61,207.47 201.00,203.00 Z "
-           + "M 207.00,209.00 "
-           + "C 207.00,209.00 219.00,201.00 219.00,201.00 "
-             + "220.67,207.25 213.95,215.83 207.00,209.00 Z "
+           + "C 191.30,208.30 187.54,203.09 184.00,198.00 "
+             + "192.09,198.68 199.52,201.24 197.00,211.00 Z "
+           + "M 173.00,203.00 "
+           + "C 173.00,203.00 172.00,199.00 172.00,199.00 "
+             + "174.13,200.59 174.15,200.57 173.00,203.00 Z "
+           + "M 213.00,199.00 "
+           + "C 210.51,203.43 204.82,209.56 201.00,203.00 "
+             + "201.00,203.00 213.00,199.00 213.00,199.00 Z "
+           + "M 311.00,202.00 "
+           + "C 311.00,202.00 308.00,203.00 308.00,203.00 "
+             + "308.00,203.00 307.00,200.00 307.00,200.00 "
+             + "307.00,200.00 311.00,202.00 311.00,202.00 Z "
+           + "M 220.00,201.00 "
+           + "C 219.37,209.85 211.27,216.47 207.00,209.00 "
+             + "207.00,209.00 220.00,201.00 220.00,201.00 Z "
            + "M 341.00,201.00 "
-           + "C 338.93,203.81 338.39,203.19 336.00,201.00 "
+           + "C 341.00,201.00 338.00,204.00 338.00,204.00 "
+             + "338.00,204.00 336.00,202.00 336.00,202.00 "
+             + "336.00,202.00 336.00,201.00 336.00,201.00 "
              + "336.00,201.00 341.00,201.00 341.00,201.00 Z "
-           + "M 233.77,215.26 "
-           + "C 226.88,218.37 221.49,209.78 228.23,204.21 "
-             + "236.94,202.77 238.99,212.90 233.77,215.26 Z "
+           + "M 235.00,205.00 "
+           + "C 235.88,207.26 237.82,210.52 236.84,212.87 "
+             + "234.92,217.45 226.60,217.67 224.84,211.95 "
+             + "223.97,209.12 225.91,205.59 227.00,203.00 "
+             + "227.00,203.00 235.00,205.00 235.00,205.00 Z "
            + "M 319.00,205.00 "
-           + "C 314.58,210.45 311.14,211.06 306.00,206.00 "
+           + "C 314.64,210.60 310.92,211.76 306.00,206.00 "
              + "306.00,206.00 319.00,205.00 319.00,205.00 Z "
            + "M 273.00,209.00 "
            + "C 273.00,209.00 272.00,215.00 272.00,215.00 "
-             + "272.00,215.00 259.00,215.75 259.00,215.75 "
-             + "259.00,215.75 247.00,212.00 247.00,212.00 "
-             + "252.00,202.91 264.94,207.48 273.00,209.00 Z")
+             + "272.00,215.00 258.00,215.78 258.00,215.78 "
+             + "258.00,215.78 246.00,211.00 246.00,211.00 "
+             + "255.11,203.14 262.62,207.60 273.00,209.00 Z")
 		   .attr("onmouseover", "javaScript:mouseEventHandler(event,'" + proteinLocalization + "','" + proteinID + "');");
 
 	        }
@@ -3239,51 +3412,46 @@
 		   	   	  .append("path")
 				  .attr("id", "plasmaMem_arch")
 				  .attr("fill", colorCellCompartment)
-				  .attr("d", "M 202.00,132.21 "
-           + "C 202.00,132.21 217.00,133.04 217.00,133.04 "
-             + "217.00,133.04 232.00,133.04 232.00,133.04 "
-             + "232.00,133.04 245.00,134.00 245.00,134.00 "
-             + "245.00,134.00 261.00,135.00 261.00,135.00 "
-             + "288.53,135.04 321.20,133.64 348.00,136.85 "
-             + "366.32,139.03 384.78,142.80 400.00,153.93 "
-             + "413.08,163.49 425.93,187.52 425.92,204.00 "
-             + "425.92,208.80 423.68,217.73 421.47,222.00 "
-             + "417.79,229.10 408.70,236.29 402.00,240.47 "
-             + "387.74,249.36 368.41,254.72 352.00,258.00 "
-             + "326.06,263.19 299.40,265.69 273.00,266.00 "
-             + "273.00,266.00 259.00,266.98 259.00,266.98 "
-             + "259.00,266.98 250.00,266.04 250.00,266.04 "
-             + "250.00,266.04 240.00,266.04 240.00,266.04 "
-             + "240.00,266.04 221.00,264.17 221.00,264.17 "
-             + "199.08,261.98 177.10,258.58 156.00,252.02 "
-             + "139.96,247.04 123.86,241.16 110.00,231.43 "
-             + "89.66,217.16 81.71,202.71 82.00,178.00 "
-             + "82.09,170.49 84.35,161.83 89.33,156.04 "
-             + "98.32,145.58 114.00,140.88 127.00,137.88 "
-             + "136.22,135.76 157.67,133.04 167.00,133.00 "
-             + "172.39,132.98 176.58,133.19 182.00,132.21 "
-             + "182.00,132.21 202.00,132.21 202.00,132.21 Z "
-           + "M 160.00,143.00 "
-           + "C 146.67,143.02 118.21,146.71 107.00,153.48 "
-             + "103.41,155.64 98.75,159.52 96.53,163.09 "
-             + "89.42,174.54 90.82,194.55 97.34,206.00 "
-             + "103.87,217.48 115.36,226.17 127.00,232.03 "
-             + "151.52,244.37 179.02,249.65 206.00,253.28 "
-             + "206.00,253.28 226.00,255.96 226.00,255.96 "
-             + "226.00,255.96 235.00,255.96 235.00,255.96 "
-             + "235.00,255.96 247.00,257.00 247.00,257.00 "
-             + "247.00,257.00 282.00,257.00 282.00,257.00 "
-             + "282.00,257.00 301.00,256.00 301.00,256.00 "
-             + "314.25,255.98 339.80,252.32 353.00,249.42 "
-             + "370.04,245.68 382.90,242.63 397.84,232.77 "
-             + "428.31,212.65 413.82,171.80 387.00,156.23 "
-             + "362.09,141.77 328.79,144.00 301.00,144.00 "
-             + "301.00,144.00 249.00,144.00 249.00,144.00 "
-             + "249.00,144.00 234.00,143.00 234.00,143.00 "
-             + "234.00,143.00 217.00,143.00 217.00,143.00 "
-             + "217.00,143.00 202.00,142.14 202.00,142.14 "
-             + "202.00,142.14 177.00,142.14 177.00,142.14 "
-             + "170.52,143.22 166.42,142.99 160.00,143.00 Z")
+				  .attr("d", "M 207.00,130.00 "
+           + "C 207.00,130.00 220.00,130.00 220.00,130.00 "
+             + "220.00,130.00 241.00,131.00 241.00,131.00 "
+             + "241.00,131.00 258.00,132.00 258.00,132.00 "
+             + "288.45,132.05 326.67,130.07 356.00,134.92 "
+             + "370.17,137.26 388.19,141.37 400.00,149.79 "
+             + "420.32,164.26 437.24,198.88 424.60,223.00 "
+             + "420.80,230.25 413.82,236.59 407.00,240.95 "
+             + "378.02,259.44 340.69,264.78 307.00,267.09 "
+             + "307.00,267.09 295.00,268.00 295.00,268.00 "
+             + "295.00,268.00 276.00,269.00 276.00,269.00 "
+             + "276.00,269.00 248.00,269.00 248.00,269.00 "
+             + "248.00,269.00 236.00,268.09 236.00,268.09 "
+             + "208.12,266.18 180.77,262.34 154.00,254.02 "
+             + "134.44,247.95 122.10,243.44 105.00,231.43 "
+             + "97.95,226.48 91.03,220.40 86.47,213.00 "
+             + "76.85,197.41 75.15,167.59 87.33,153.00 "
+             + "95.53,143.17 111.77,138.12 124.00,135.42 "
+             + "135.36,132.92 155.55,130.02 167.00,130.00 "
+             + "173.01,129.99 179.03,130.27 185.00,129.42 "
+             + "194.21,128.30 198.33,129.99 207.00,130.00 Z "
+           + "M 104.04,155.79 "
+           + "C 87.51,168.18 89.68,195.71 100.63,211.00 "
+             + "106.57,219.29 117.16,226.21 126.00,231.14 "
+             + "141.43,239.75 158.94,243.66 176.00,247.42 "
+             + "203.68,253.53 214.14,255.96 243.00,256.00 "
+             + "243.00,256.00 258.00,257.00 258.00,257.00 "
+             + "258.00,257.00 280.00,257.00 280.00,257.00 "
+             + "280.00,257.00 297.00,256.00 297.00,256.00 "
+             + "313.14,255.97 331.08,253.29 347.00,250.42 "
+             + "362.68,247.60 380.42,243.60 394.00,234.91 "
+             + "402.14,229.70 407.03,225.91 411.33,217.00 "
+             + "421.83,195.26 406.42,167.19 387.00,156.17 "
+             + "363.54,142.86 330.28,143.96 304.00,144.00 "
+             + "304.00,144.00 292.00,144.95 292.00,144.95 "
+             + "292.00,144.95 273.00,144.95 273.00,144.95 "
+             + "273.00,144.95 258.00,144.00 258.00,144.00 "
+             + "258.00,144.00 189.00,143.14 189.00,143.14 "
+             + "189.00,143.14 158.00,143.14 158.00,143.14 "
+             + "141.39,145.67 117.68,145.56 104.04,155.79 Z")
 				  .attr("onmouseover", "javaScript:mouseEventHandler(event,'" + proteinLocalization + "','" + proteinID + "');");
 
 	        }
@@ -3305,8 +3473,9 @@
 		//SVG		   
 		   var divSVG = d3.select("#myCanvas") 
 		  	        .append("svg")
-			        .attr("width",1000)
+			        .attr("width",500)
         	        .attr("height",400);
+					
 		   var svg = d3.select("svg")
 		   	   	    .append("image")
 					.attr("xlink:href", "./eukaryota-2D.jpg")
@@ -3323,7 +3492,7 @@
 			//SVG		   
 		   var divSVG = d3.select("#myCanvas") 
 		  	        .append("svg")
-			        .attr("width",1000)
+			        .attr("width",500)
         	        .attr("height",400);
 		   var svg = d3.select("svg")
 		   	   	    .append("image")
@@ -3341,7 +3510,7 @@
 		   //SVG		   
 		   var divSVG = d3.select("#myCanvas") 
 		  	        .append("svg")
-			        .attr("width",1000)
+			        .attr("width",500)
         	        .attr("height",400);
 		   var svg = d3.select("svg")
 		   	   	    .append("image")
@@ -3642,8 +3811,6 @@
 	    }
 
 
-
-
 	    //Fill array with counters and colors
 
 	    var proteinLocColorArray = [];
@@ -3655,25 +3822,25 @@
 	                if (numproteinsArray[i] == 0) {
 	                    proteinLocColorArray.push({
 	                        proteinLocalization: cellcompartmentArray[i],
-	                        LocalizationColor: "none"
+	                        LocalizationColor: "none",
+							numberProtein : numproteinsArray[i],
+							percentProtein :  0
 	                    });
 	                }
 	                else {
 
 	                    proteinLocColorArray.push({
 	                        proteinLocalization: cellcompartmentArray[i],
-	                        LocalizationColor: colorLocalizationArray[j]
+	                        LocalizationColor: colorLocalizationArray[j],
+							numberProtein : numproteinsArray[i],
+							percentProtein : Math.round((100 / parseInt(maxnumpro)) * parseInt(numproteinsArray[i])) 
 	                    });
 	                }
 	            }
 	        }
 
 	    }
-
 	    return proteinLocColorArray;
-
-
-
 
 	}
 	
@@ -3720,123 +3887,155 @@
               
               //Array containing protein score and score color
               var proteinScoreColorArray = [];
-              
               //Assign color to proteinscore
               for(var i=0; i<scoreProtein.length; i++){
               	var score = scoreProtein[i];
-              	for(var j=0;j<leftArray.length; j++){
-                 		if(score.proteinScore>leftArray[j] && score.proteinScore<=rightArray[j]){					
-						proteinScoreColorArray.push({
+					
+					if(score.proteinScore == 0)
+					{
+					 		proteinScoreColorArray.push({
 						        proteinID:score.proteinID,
                                 proteinLocalization: score.proteinLocalization,
-								scoreColor: colorArray[j]
-                            });	
+								proteinScore: score.proteinScore,
+								scoreColor: colorArray[0],
+								percentScore: 0
 								
-              			}
-              	 }	
+                            });	
+					}
+					else
+					{				
+				
+                    	for(var j=0;j<leftArray.length; j++){				       
+                       		if(score.proteinScore>leftArray[j] && score.proteinScore<=rightArray[j]){					
+      						proteinScoreColorArray.push({
+      						        proteinID:score.proteinID,
+                                      proteinLocalization: score.proteinLocalization,
+      								proteinScore: score.proteinScore,
+      								scoreColor: colorArray[j],
+      								percentScore: Math.round((100 / parseInt(scoreProtein[scoreProtein.length - 1].proteinScore)) * parseInt(score.proteinScore))
+      								
+                                  });				
+      							
+      								
+                    			}
+                    	 }	
+				  }
               }
 			  
 			  return proteinScoreColorArray;	
 	
 	} 
+	
+   function readFile(fileInput,fileDisplayArea)
+   {
+   			var file = fileInput.files[0];
+            var textType = /text.*/;
+                        			
+            if (file.type.match(textType)) {
+                        			   
+                                        var reader = new FileReader();
+                                        reader.onload = function (e) {
+                                            var words = (function () {
+                        
+                                                //split the file contents into separate lines on encountering \R or \r\n or \n
+                                                var fileLines = reader.result.trim().split(/\r?\n/);  
+                        						//Old version replace(/[\R\r\n]/g, ',').split(/[\,]+/g);                     
+                                                var fileLinesCount = fileLines.length;
+                        						                       
+                                                //create two new arrays - for score and localization
+                                                var scoreArray = [];
+                                                
+                                                //Omit the 1st two lines and start from the 3rd line
+                                                for (var i = 3; i < fileLines.length; i++) {
+                        
+                                                    //Separate the line into words on encountering a tab and print each word
+                                                    var arrayWords = fileLines[i].replace(/[\t]/g, ',').split(/[\,]+/g);                            
+                        							
+                        							// Array containing protein scores
+                                                    scoreArray.push({
+                                                        proteinID: arrayWords[0],
+                        								proteinScore: arrayWords[1],
+                                                        proteinLocalization: arrayWords[2]
+                                                    });						
+                        							
+                                                }
+                        																						  			
+                                                //Assigning global variable of score array
+                                                scoreProtein = scoreArray;						
+                        						scoreProtein.sort(function(a,b) { return parseInt(a.proteinScore) - parseInt(b.proteinScore) } );									
+                        
+                                                //find out the type of cell by reading the first line in the input file
+                                                cellType = fileLines[0].trim().toLowerCase();
+                        						
+                        						//To select correct cell picture
+                                                selectCellPicture(); 
+                        						                       	
+                        						//Header				 
+                        					    writeHeader('headerPP',"");		
+                        						
+                        						//Checking only one protein in file
+                        						isOneProteinInFile();	
+                        						
+                        						//Color of score
+                        						scoreColorArray = definedColorScore(fileLines[1].trim().toLowerCase());	
+                        						
+                        						//Color of Protein number				
+                        						localizationColorArray = definedColorLocalization();				
+                        						
+                        						//Checking only one protein in file
+                        						if(isNotOneProtein)
+                        						{					
+                        									
+                                						//To highlight cell's compartments
+                                						for (var i = 0; i < localizationColorArray.length; i++) {
+                                              					 var colorLoc = localizationColorArray[i];										
+                        										        						
+                                								highlightCompartments("",colorLoc.proteinLocalization,colorLoc.LocalizationColor);							   
+                                         				}				   
+                        						}
+                        						else
+                        						{						
+                        									
+                        								//To highlight cell's compartments
+                                						for (var i = 0; i < scoreColorArray.length; i++) {
+                                              					 var colorScore = scoreColorArray[i];								
+                                								
+                                								highlightCompartments(colorScore.proteinID,colorScore.proteinLocalization,colorScore.scoreColor);							   
+                                         				}						
+                        										
+                        						 }
+                        
+                                            } ());
+                        
+                                        }
+                                        reader.readAsText(file);
+                        
+                                    }
+                        
+             else {
+                      fileDisplayArea.innerText = "File not supported!";
+                  }	
+									
+   }
+	
+	
 
    function main() { 	
    	
         var fileInput = document.getElementById('fileInput');
-        var fileDisplayArea = document.getElementById('fileDisplayArea');		
-        fileInput.addEventListener('change', function (e) {
-            var file = fileInput.files[0];
-            var textType = /text.*/;
-
-            if (file.type.match(textType)) {
-			   
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    var words = (function () {
-
-                        //split the file contents into separate lines on encountering \R or \r\n or \n
-                        var fileLines = reader.result.trim().replace(/[\R\r\n]/g, ',').split(/[\,]+/g);                       
-                        var fileLinesCount = fileLines.length;
-                       
-                        //create two new arrays - for score and localization
-                        var scoreArray = [];
-                        
-                        //Omit the 1st two lines and start from the 3rd line
-                        for (var i = 3; i < fileLines.length; i++) {
-
-                            //Separate the line into words on encountering a tab and print each word
-                            var arrayWords = fileLines[i].replace(/[\t]/g, ',').split(/[\,]+/g);                            
-							
-							// Array containing protein scores
-                            scoreArray.push({
-                                proteinID: arrayWords[0],
-								proteinScore: arrayWords[1],
-                                proteinLocalization: arrayWords[2]
-                            });						
-							
-                        }
-						                  
-
-                        //Assigning global variable of score array
-                        scoreProtein = scoreArray;
-									
-
-                        //find out the type of cell by reading the first line in the input file
-                        cellType = fileLines[0].trim().toLowerCase();
-						
-						//To select correct cell picture
-                        selectCellPicture(); 
-						                       	
-						//Header				 
-					    writeHeader('headerPP',"");		
-						
-						//Checking only one protein in file
-						isOneProteinInFile();	
-						
-						//Color of score
-						scoreColorArray = definedColorScore(fileLines[1].trim().toLowerCase());					
-										
-						
-						//Checking only one protein in file
-						if(isNotOneProtein)
-						{						 		
-							
-								//Color of locationzation
-								var localizationColorArray = [];
-						    		localizationColorArray = definedColorLocalization();								
-								
-									
-        						//To highlight cell's compartments
-        						for (var i = 0; i < localizationColorArray.length; i++) {
-                      					 var colorLoc = localizationColorArray[i];										
-										        						
-        								highlightCompartments("",colorLoc.proteinLocalization,colorLoc.LocalizationColor);							   
-                 				}				   
-						}
-						else
-						{						
-									
-								//To highlight cell's compartments
-        						for (var i = 0; i < scoreColorArray.length; i++) {
-                      					 var colorScore = scoreColorArray[i];								
-        								
-        								highlightCompartments(colorScore.proteinID,colorScore.proteinLocalization,colorScore.scoreColor);							   
-                 				}						
-										
-						 }
-
-                    } ());
-
-                }
-                reader.readAsText(file);
-
-            }
-
-            else {
-                fileDisplayArea.innerText = "File not supported!";
-            }
-        });
-
+        var fileDisplayArea = document.getElementById('fileDisplayArea');	
+		
+		var divBtBack = getPopupObject('btnBack');
+        		if(divBtBack.hasChildNodes())
+				{				
+                       readFile(fileInput,fileDisplayArea);							   
+				}
+				else
+				{					
+        			fileInput.addEventListener('change', function (e) {
+					   readFile(fileInput,fileDisplayArea);            
+        			});
+      	   		}	  
     }
 	
 	main();

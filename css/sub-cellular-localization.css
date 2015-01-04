@@ -1,0 +1,40 @@
+#linkPopup
+{
+position: absolute;
+z-index: 9000; 
+text-decoration: none; 
+visibility:hidden; 
+overflow-y:auto;
+width:270px;
+height:200px;
+
+}
+#myCanvas
+{
+position:relative;
+width:100%;
+
+ }
+#tblLinkPopup
+{
+    background-color:#D3D3D3;
+    border:1;
+}
+#tblMain
+{
+  width:100%; 
+  background-color:#F2F2F2;  
+}
+#btnBack,#tdTblDescriptionScore,#tdTblDescriptionLoc
+{
+ float:right;
+ }
+#score,#localization,#myCanvas
+ {
+             float:left;
+ }
+p.oneProtein
+{
+  color:Blue;
+  font-weight:bold;
+}
