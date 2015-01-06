@@ -252,14 +252,14 @@
 				divbtnBack.innerHTML = "<input type='submit' value='Go Back' onclick=\"main();\">";
 			  
 			     var strScoreTable = "";
-				     strScoreTable += "<table><tr><td>Protein ID</td><td>Score</td><td>%</td></tr>";
+				     strScoreTable += "<table><tr><td>Protein ID</td><td>&nbsp;&nbsp;&nbsp;</td><td>Score</td><td>&nbsp;</td><td>%</td></tr>";
 					 					 
 					 for (var i = 0; i < scoreColorArray.length; i++) {
 		          	 	  var scoreColor = scoreColorArray[i];
 						  
 						  if(proteinID==scoreColor.proteinID)
 						  {						  
-						  		strScoreTable += "<tr><td>"+ scoreColor.proteinID +"</td><td>"+scoreColor.proteinScore+"</td><td>"+scoreColor.percentScore+"</td></tr>";
+						  		strScoreTable += "<tr><td>"+ scoreColor.proteinID +"</td><td>&nbsp;&nbsp;&nbsp;</td><td class='adjustRight'>"+scoreColor.proteinScore+"</td><td>&nbsp;</td><td class='adjustRight'>"+scoreColor.percentScore+"</td></tr>";
 						  }						  
 						  
 				     }
@@ -271,11 +271,11 @@
 			  else
 			  {
 			     var strLocTable = "";
-				     strLocTable += "<table><tr><td>Localization</td><td>#proteins</td><td>%</td></tr>";
+				     strLocTable += "<table><tr><td>Localization</td><td>&nbsp;&nbsp;&nbsp;</td><td>#proteins</td><td>&nbsp;</td><td>%</td></tr>";
 					 					 
 					 for (var i = 0; i < localizationColorArray.length; i++) {
 		          	 	  var LocColor = localizationColorArray[i];
-						  strLocTable += "<tr><td>"+ LocColor.proteinLocalization +"</td><td>"+LocColor.numberProtein+"</td><td>"+LocColor.percentProtein+"</td></tr>";
+						  strLocTable += "<tr><td>"+ LocColor.proteinLocalization +"</td><td>&nbsp;&nbsp;&nbsp;</td><td class='adjustRight'>"+LocColor.numberProtein+"</td><td>&nbsp;</td><td class='adjustRight'>"+LocColor.percentProtein+"</td></tr>";
 						  
 				     }
 					 
