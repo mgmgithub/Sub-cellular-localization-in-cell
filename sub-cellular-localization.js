@@ -252,14 +252,14 @@
 				divbtnBack.innerHTML = "<input type='submit' value='Go Back' onclick=\"main();\">";
 			  
 			     var strScoreTable = "";
-				     strScoreTable += "<table><tr><td>Protein ID</td><td>&nbsp;&nbsp;&nbsp;</td><td>Score</td><td>&nbsp;</td><td>%</td></tr>";
+			     strScoreTable += "<table><tr><td>Protein ID</td><td>&nbsp;&nbsp;&nbsp;</td><td>Score</td><td>&nbsp;</td><td>%</td></tr>";
 					 					 
 					 for (var i = 0; i < scoreColorArray.length; i++) {
 		          	 	  var scoreColor = scoreColorArray[i];
 						  
 						  if(proteinID==scoreColor.proteinID)
-						  {						  
-						  		strScoreTable += "<tr><td>"+ scoreColor.proteinID +"</td><td>&nbsp;&nbsp;&nbsp;</td><td class='adjustRight'>"+scoreColor.proteinScore+"</td><td>&nbsp;</td><td class='adjustRight'>"+scoreColor.percentScore+"</td></tr>";
+						  {
+						      strScoreTable += "<tr><td>" + scoreColor.proteinID + "</td><td>&nbsp;&nbsp;&nbsp;</td><td class='adjustRight'>" + scoreColor.proteinScore + "</td><td>&nbsp;</td><td class='adjustRight'>" + scoreColor.percentScore + "</td></tr>";
 						  }						  
 						  
 				     }
@@ -271,11 +271,11 @@
 			  else
 			  {
 			     var strLocTable = "";
-				     strLocTable += "<table><tr><td>Localization</td><td>&nbsp;&nbsp;&nbsp;</td><td>#proteins</td><td>&nbsp;</td><td>%</td></tr>";
+			     strLocTable += "<table><tr><td>Localization</td><td>&nbsp;&nbsp;&nbsp;</td><td>#proteins</td><td>&nbsp;</td><td>%</td></tr>";
 					 					 
 					 for (var i = 0; i < localizationColorArray.length; i++) {
 		          	 	  var LocColor = localizationColorArray[i];
-						  strLocTable += "<tr><td>"+ LocColor.proteinLocalization +"</td><td>&nbsp;&nbsp;&nbsp;</td><td class='adjustRight'>"+LocColor.numberProtein+"</td><td>&nbsp;</td><td class='adjustRight'>"+LocColor.percentProtein+"</td></tr>";
+		          	 	  strLocTable += "<tr><td>" + LocColor.proteinLocalization + "</td><td>&nbsp;&nbsp;&nbsp;</td><td class='adjustRight'>" + LocColor.numberProtein + "</td><td>&nbsp;</td><td class='adjustRight'>" + LocColor.percentProtein + "</td></tr>";
 						  
 				     }
 					 
@@ -3968,7 +3968,7 @@
                         																						  			
                                                 //Assigning global variable of score array
                                                 scoreProtein = scoreArray;						
-                        						scoreProtein.sort(function(a,b) { return parseInt(a.proteinScore) - parseInt(b.proteinScore) } );									
+                        						scoreProtein.sort(function(a,b) { return parseInt(b.proteinScore) - parseInt(a.proteinScore) } );									
                         
                                                 //find out the type of cell by reading the first line in the input file
                                                 cellType = fileLines[0].trim().toLowerCase();
