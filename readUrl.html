@@ -13,6 +13,7 @@
 	var oRequest = new XMLHttpRequest();
 	var sURL  = "https://github.com/3BioGirls/Sub-cellular-localization-in-cell/blob/master/Examplefile/" + filename;
 	
+	Conole.log(sURL);
 	
 	oRequest.open("GET",sURL,false); // Open the request
 	oRequest.responseType = "text"; // Set the type of response expected
