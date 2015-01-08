@@ -10,11 +10,12 @@
 	alert("File:"+ filename);
 	
 
-	var oRequest = new XMLHttpRequest();
+//	var oRequest = new XMLHttpRequest();
 	var sURL  = "https://github.com/3BioGirls/Sub-cellular-localization-in-cell/blob/master/Examplefile/" + filename;
 	
-	Conole.log(sURL);
+	Console.log(sURL);
 	
+	/*
 	oRequest.open("GET",sURL,false); // Open the request
 	oRequest.responseType = "text"; // Set the type of response expected
 	oRequest.setRequestHeader("Content-Type", "text/xml");
@@ -34,6 +35,7 @@
 		  
 	if (oRequest.status==200) alert(oRequest.responseText);
 	else alert("Error executing XMLHttpRequest call!");}
+	*/
 
 	
  }
