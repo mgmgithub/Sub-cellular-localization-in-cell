@@ -3914,7 +3914,7 @@
                                           proteinLocalization: score.proteinLocalization,
           								proteinScore: score.proteinScore,
           								scoreColor: colorArray[j],
-          								percentScore: Math.round((100 / parseInt(scoreProtein[scoreProtein.length - 1].proteinScore)) * parseInt(score.proteinScore))
+          								percentScore: Math.round((100 / parseInt(scoreProtein[0].proteinScore)) * parseInt(score.proteinScore))
           								
                                       });				
           							
