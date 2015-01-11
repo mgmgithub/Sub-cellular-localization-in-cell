@@ -42,13 +42,24 @@
   	    <br/> 	    
   		<h1 style="font-size:30px;">Please upload your input file</h1>
 		<br/>
+          		<div>
+                  Select from example file : 
+                    <input id = "case1" type="radio" name="ExampleType" value="case1" >One Protein One Localization
+                    <input id = "case2" type="radio" name="ExampleType" value="case2" >One Protein Multiple Localizations
+                	<input id = "case3" type="radio" name="ExampleType" value="case3" >Multiple Proteins and Localizations
+                 </div>	
+		<br/>
+		<div>
+		Or
+		</div>
+		<br/>
   		<div>
-  			Select a text file: 
+  			Select a text file :  
   			<input type="file" id="fileInput">
   		</div>
   		<pre id="fileDisplayArea"><pre>
   
-  </div><div id="btnBack" ></div>
+  </div><div id="btnBack" ></div> 
   <!-- Header  !-->
   <div id="headerPP"></div> 
   <!-- Pop-up  !-->
@@ -56,22 +67,22 @@
   	 <table id="tblLinkPopup"><thead id = "popHeader"></thead><tbody id = "popDetail"></tbody></table>
   </div>
   <table>
-  	<tr>
-		 <td>
-		 	 <!-- Image  !-->
-             <div id="myCanvas"></div>			 
+  	<tr>		
+		 <td>	 	 
+              <!-- Image  !-->
+              <div id="myCanvas"></div>				 	 
 		 </td>	
-         <td width="20%">&nbsp;&nbsp;&nbsp;</td>
-		 <td >
-		 	 <div id="tdTblDescriptionScore" ></div>
-		     <div id="tdTblDescriptionLoc" ></div> 
-		 </td>		
+		 <td width = "100%"> 	
+		 	
+            	  <div class="CSSTableGenerator" id="tdTblDescriptionScore" ></div>
+            	  <div class="CSSTableGenerator" id="tdTblDescriptionLoc" ></div>		 			 
+		 </td>			
 	</tr>	
 	<tr>
     	<td>
         	<div id="score"></div>
         	<div id="localization"></div>
-    	</td>
+    	</td>		 
 	</tr>
   </table>
 </td>

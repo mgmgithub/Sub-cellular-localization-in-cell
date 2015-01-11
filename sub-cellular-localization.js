@@ -92,8 +92,7 @@
 	{	 		 
 		
 		ClearPopup();	 
-		selectCellPicture();	
-		console.log(scoreColorArray);		
+		selectCellPicture();			
 		 for (var i = 0; i < scoreColorArray.length; i++) {
 		          var highlightColor = scoreColorArray[i];
 		 	 	  if(proteinID == highlightColor.proteinID)
@@ -168,11 +167,11 @@
                                                             rowHeaderProtein.setAttribute("id", "rowHeaderProtein" + i);
                                                             var columnHeaderProtein = document.createElement("td");
                                                             columnHeaderProtein.setAttribute("id", "columnHeaderProtein" + i);					
-                                                            var innerHeaderTag = document.createElement("p");
-                                                            innerHeaderTag.setAttribute("id", "innerHeaderTag" + i);                              				    					
-                                                            innerHeaderTag.innerHTML = "<b>Localization = " + scorePT.proteinLocalization + "<br/>Protein ID : Score</b>";
+                                                            //var innerHeaderTag = document.createElement("p");
+                                                            //innerHeaderTag.setAttribute("id", "innerHeaderTag" + i);                              				    					
+                                                            columnHeaderProtein.innerHTML = "<b>Localization = " + scorePT.proteinLocalization + "<br/>Protein ID : Score<br/> </b>";
                                                                                 					
-                                                            columnHeaderProtein.appendChild(innerHeaderTag);                  
+                                                            //columnHeaderProtein.appendChild(innerHeaderTag);                  
                                                             rowHeaderProtein.appendChild(columnHeaderProtein);
                                                             headerPopup.appendChild(rowHeaderProtein);	
 															isHeader = false;
@@ -185,7 +184,7 @@
                                                     rowProtein.setAttribute("id", "rowProtein" + i);
                                                     var columnProtein = document.createElement("td");
                                                     columnProtein.setAttribute("id", "columnProtein" + i);					
-                                					var innerTag = document.createElement("p");
+                                					var innerTag = document.createElement("span");
                                 					innerTag.setAttribute("id", "innnerText" + i);				
     																					
                                 				    innerTag.setAttribute("onClick", "javaScript:showHighlightScore('"+scorePT.proteinID+"');");						
@@ -236,10 +235,12 @@
         		  	  while (divTableLoc.hasChildNodes()) {
 			  		  		divTableLoc.removeChild(divTableLoc.firstChild);
 					  }
+			 divTableLoc.style.visibility = 'hidden';
 			 var divTableScore = getPopupObject('tdTblDescriptionScore');
         		  	  while (divTableScore.hasChildNodes()) {
 			  		  		divTableScore.removeChild(divTableScore.firstChild);
 					  }
+			 divTableScore.style.visibility = 'hidden';
 			  var divbtnBack = getPopupObject('btnBack');
 				 while (divbtnBack.hasChildNodes()) {
 			  		  		divbtnBack.removeChild(divbtnBack.firstChild);
@@ -250,37 +251,38 @@
 			     //To create go back botton
 			    
 				divbtnBack.innerHTML = "<input type='submit' value='Go Back' onclick=\"main();\">";
-			  
+			    
 			     var strScoreTable = "";
-			     strScoreTable += "<table><tr><td>Protein ID</td><td>&nbsp;&nbsp;&nbsp;</td><td>Score</td><td>&nbsp;</td><td>%</td></tr>";
+			     strScoreTable += "<table><tr><td>Protein ID</td><td>Score</td><td>%</td></tr>";
 					 					 
 					 for (var i = 0; i < scoreColorArray.length; i++) {
 		          	 	  var scoreColor = scoreColorArray[i];
 						  
 						  if(proteinID==scoreColor.proteinID)
 						  {
-						      strScoreTable += "<tr><td>" + scoreColor.proteinID + "</td><td>&nbsp;&nbsp;&nbsp;</td><td class='adjustRight'>" + scoreColor.proteinScore + "</td><td>&nbsp;</td><td class='adjustRight'>" + scoreColor.percentScore + "</td></tr>";
+						      strScoreTable += "<tr><td>" + scoreColor.proteinID + "</td><td class='adjustRight'>" + scoreColor.proteinScore + "</td><td class='adjustRight'>" + scoreColor.percentScore + "</td></tr>";
 						  }						  
 						  
 				     }
 					 
 					 strScoreTable += "</table>"; 
 			     divTableScore.innerHTML = strScoreTable;
-				 						 
+				 divTableScore.style.visibility = 'visible';						 
 			  }
 			  else
 			  {
 			     var strLocTable = "";
-			     strLocTable += "<table><tr><td>Localization</td><td>&nbsp;&nbsp;&nbsp;</td><td>#proteins</td><td>&nbsp;</td><td>%</td></tr>";
+			     strLocTable += "<table><tr><td>Localization</td><td>#proteins</td><td>%</td></tr>";
 					 					 
 					 for (var i = 0; i < localizationColorArray.length; i++) {
 		          	 	  var LocColor = localizationColorArray[i];
-		          	 	  strLocTable += "<tr><td>" + LocColor.proteinLocalization + "</td><td>&nbsp;&nbsp;&nbsp;</td><td class='adjustRight'>" + LocColor.numberProtein + "</td><td>&nbsp;</td><td class='adjustRight'>" + LocColor.percentProtein + "</td></tr>";
+		          	 	  strLocTable += "<tr><td>" + LocColor.proteinLocalization + "</td><td class='adjustRight'>" + LocColor.numberProtein + "</td><td class='adjustRight'>" + LocColor.percentProtein + "</td></tr>";
 						  
 				     }
 					 
 					 strLocTable += "</table>"; 
 			     divTableLoc.innerHTML = strLocTable;
+				 divTableLoc.style.visibility = 'visible';
 			  }
 	
 	}
@@ -3929,19 +3931,150 @@
 	
 	} 
 	
+   function createStringExample(exampleType)
+   {
+   		var strData = "";
+   		if(exampleType == 1)
+		{
+		    
+		 	strData = "Eukaryota" +
+					  "\n0-100" +
+					  "\nProtein Id	Score	Localization	Gene Ontology" +
+					  "\ntr|Q8STW1|Q8STW1_ENCCU	20	plasma membrane	This is not needed";
+			readExample(strData);
+		
+		
+		}
+		else if (exampleType == 2)
+		{
+		 	strData = "Eukaryota" +
+			"\n0-100"+
+			"\nProtein Id	Score	Localization	Gene Ontology"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	1	chloroplast	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	2	chloroplast membrane	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	100	cytoplasm	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	3	endoplasmic reticulum	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	4	endoplasmic reticulum membrane	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	8	mitochondrion	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	9	mitochondrion membrane	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	10	nucleus	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	11	nucleus membrane	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	12	peroxisome	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	13	peroxisome membrane	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	14	plastid	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	15	vacuole	This is not needed"+
+			"\ntr|Q8STW1|Q8STW1_ENCCU	16	vacuole membrane	This is not needed";
+			readExample(strData);
+		}
+		else if (exampleType == 3)
+		{
+		 	strData = "Eukaryota" +
+					  "\n0-100"+
+					  "\nProtein Id	Score	Localization	Gene Ontology"+
+					  "\nsp|Q8SWH2|HSP7A_ENCCU	16	nucleus	This is not needed"+
+					  "\ntr|Q8SQK2|Q8SQK2_ENCCU	2	nucleus	This is not needed"+
+					  "\ntr|Q8STW1|Q8STW1_ENCCA	23	vacuole	This is not needed"+
+					  "\ntr|Q8SQK2|Q8SQK2_ENCCU	80	peroxisome	This is not needed";	
+			readExample(strData);	
+		}
+   }
+	
+   function readExample(strData)
+   {
+   			cellType = "";
+            scoreProtein = [];	
+        	scoreColorArray = [];
+        	localizationColorArray = [];
+        	isNotOneProtein = false;
+   
+   			//split the file contents into separate lines on encountering \R or \r\n or \n
+                    var fileLines = strData.trim().split(/\r?\n/);  
+            //Old version replace(/[\R\r\n]/g, ',').split(/[\,]+/g);                     
+                    var fileLinesCount = fileLines.length;                        						                       
+            //create two new arrays - for score and localization
+                    var scoreArray = [];                                                
+            //Omit the 1st two lines and start from the 3rd line
+                                                      for (var i = 3; i < fileLines.length; i++) {
+                              
+                                                          //Separate the line into words on encountering a tab and print each word
+                                                          var arrayWords = fileLines[i].replace(/[\t]/g, ',').split(/[\,]+/g);                            
+                              							
+                              							// Array containing protein scores													
+      													if(arrayWords[1] >= 0)
+      													{													
+                                                                scoreArray.push({
+                                                                    proteinID: arrayWords[0],
+                                    								proteinScore: arrayWords[1],
+                                                                    proteinLocalization: arrayWords[2]
+                                                                });	
+      													}					
+                              							
+                                                      }
+                        																						  			
+                                                //Assigning global variable of score array
+                                                scoreProtein = scoreArray;																
+                        						scoreProtein.sort(function(a,b) { return parseInt(b.proteinScore) - parseInt(a.proteinScore) } );									
+                        
+                                                //find out the type of cell by reading the first line in the input file
+                                                cellType = fileLines[0].trim().toLowerCase();
+                        						
+                        						//To select correct cell picture
+                                                selectCellPicture(); 
+                        						                       	
+                        						//Header				 
+                        					    writeHeader('headerPP',"");		
+                        						
+                        						//Checking only one protein in file
+                        						isOneProteinInFile();
+                        						
+                        						//Color of score
+                        						scoreColorArray = definedColorScore(fileLines[1].trim().toLowerCase());	
+                        						
+                        						//Color of Protein number				
+                        						localizationColorArray = definedColorLocalization();				
+                        						
+                        						//Checking only one protein in file
+                        						if(isNotOneProtein)
+                        						{					
+                        									
+                                						//To highlight cell's compartments
+                                						for (var i = 0; i < localizationColorArray.length; i++) {
+                                              					 var colorLoc = localizationColorArray[i];										
+                        										        						
+                                								highlightCompartments("",colorLoc.proteinLocalization,colorLoc.LocalizationColor);							   
+                                         				}				   
+                        						}
+                        						else
+                        						{						
+                        									
+                        								//To highlight cell's compartments
+                                						for (var i = 0; i < scoreColorArray.length; i++) {
+                                              					 var colorScore = scoreColorArray[i];								
+                                								
+                                								highlightCompartments(colorScore.proteinID,colorScore.proteinLocalization,colorScore.scoreColor);							   
+                                         				}						
+                        										
+                        						 } 
+   	    	
+   }
+		
+	
+	
    function readFile(fileInput,fileDisplayArea)
    {
-   			var file = fileInput.files[0];
-            var textType = /text.*/;
-                        			
-            if (file.type.match(textType)) {
+   						   						
+			var file = fileInput.files[0];			
+            var textType = /text.*/;	
+			
+			                       			
+           if (file.type.match(textType)) {
                         			   
                                         var reader = new FileReader();
                                         reader.onload = function (e) {
                                             var words = (function () {
                         
                                                 //split the file contents into separate lines on encountering \R or \r\n or \n
-                                                var fileLines = reader.result.trim().split(/\r?\n/);  
+                                                var fileLines = reader.result.trim().split(/\r?\n/);												 
                         						//Old version replace(/[\R\r\n]/g, ',').split(/[\,]+/g);                     
                                                 var fileLinesCount = fileLines.length;
                         						                       
@@ -4023,25 +4156,42 @@
                   }	
 									
    }
-	
-	
+		
 
-   function main() { 	
+   function main() { 
+    
+	   var rdbCase1 = getPopupObject('case1');
+	   rdbCase1.setAttribute("onclick", "createStringExample('1');");
+	   
+	   var rdbCase2 = getPopupObject('case2');
+	   rdbCase2.setAttribute("onclick", "createStringExample('2');");
+	   
+	   var rdbCase3 = getPopupObject('case3');
+	   rdbCase3.setAttribute("onclick", "createStringExample('3');");
+   				
    	
         var fileInput = document.getElementById('fileInput');
         var fileDisplayArea = document.getElementById('fileDisplayArea');	
 		
 		var divBtBack = getPopupObject('btnBack');
         		if(divBtBack.hasChildNodes())
-				{				
-                       readFile(fileInput,fileDisplayArea);							   
+				{			
+					   if(fileInput.files[0])
+					   {		   	
+                       				readFile(fileInput,fileDisplayArea);
+					   }
+					   else
+					   {
+					   	   			createStringExample('3');
+					   }							   
 				}
 				else
 				{					
         			fileInput.addEventListener('change', function (e) {
 					   readFile(fileInput,fileDisplayArea);            
         			});
-      	   		}	  
+      	   		}
+					  
     }
 	
 	main();
