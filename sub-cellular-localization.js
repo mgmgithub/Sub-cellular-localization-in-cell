@@ -263,9 +263,8 @@
 						  if(proteinID==scoreColor.proteinID)
 						  {
 						      strScoreTable += "<tr><td>" + scoreColor.proteinID + "</td><td>&nbsp;&nbsp;&nbsp;</td><td class='adjustRight'>" + scoreColor.proteinScore + "</td><td>&nbsp;</td><td class='adjustRight'>" + scoreColor.percentScore + "</td></tr>";
-						  }						  
-						  
-				     }
+						  }
+					}
 					 
 					 strScoreTable += "</table>"; 
 			     divTableScore.innerHTML = strScoreTable;
@@ -314,7 +313,6 @@
 			//Red - 3
 			var red_colorArray=["#FAE6E6","#F5CCCC","#F0B2B2","#EB9999","#E68080","#E06666","#D63333","#CC0000","#A30000","#7A0000"];
 				  
-					  
 			  //Showin score caption
 			  if(proteinID != "")
 			  {
@@ -334,8 +332,8 @@
 					colorScoreArray_caption = red_colorArray.slice(0); 
 				}
 				else{
-					//Green 
-					colorScoreArray_caption=["#E8F4E9","#D7FCDC","#B9FAC3","#96F6A5","#76E687","#4DCB60","#379745","#167023","#045310","#003F0A"];
+					//Red
+					var red_colorArray=["#FAE6E6","#F5CCCC","#F0B2B2","#EB9999","#E68080","#E06666","#D63333","#CC0000","#A30000","#7A0000"];
 				}
 				
 				var scoreColors="";
