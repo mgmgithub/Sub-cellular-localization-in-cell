@@ -3819,7 +3819,6 @@
 
 
 	    //Fill array with counters and colors
-
 	    var proteinLocColorArray = [];
 
 	    for (var i = 0; i < numproteinsArray.length; i++) {
@@ -3887,7 +3886,6 @@
 			}		 
               
               var maxcolor=10;
-              
               
               //Get the minimum and maximum score by reading the second line of the file
               var score = maxminScore;
