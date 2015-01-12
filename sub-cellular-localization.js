@@ -386,8 +386,8 @@
 					locColors = locColors + "<td bgcolor='"+colorLocalizationArray_caption[i]+"' height='5' width='18'></td>";
 				}
 					 
-				 divCaptionLoc.innerHTML = "<table><tr><td colspan='22'><b>Localization : </b></td></tr>"                     
-                      		+ "<tr><td>Min</td>" + locColors	+ "<td>Max</td></tr>"			  					   
+				divCaptionLoc.innerHTML = "<table><tr><td colspan='22'><b>Localization : </b></td></tr>"                     
+                      		+ "<tr><td>Min</td>" + locColors + "<td>Max</td></tr>"			  					   
 				+ "<tr>"					   
                       		+ "<td></td>"   
 				+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>0</font></td>"
