@@ -243,14 +243,14 @@
 			 divTableScore.style.visibility = 'hidden';
 			  var divbtnBack = getPopupObject('btnBack');
 				 while (divbtnBack.hasChildNodes()) {
-			  		  		divbtnBack.removeChild(divbtnBack.firstChild);
-					  }
+			  	 	  		divbtnBack.removeChild(divbtnBack.firstChild);
+				 	  }
 			 
 			  if(proteinID != "")
 			  {
 			     //To create go back botton
 			    
-				divbtnBack.innerHTML = "<input type='submit' value='Go Back' onclick=\"main();\">";
+				divbtnBack.innerHTML = "<label style='float:left;'>Go back to localization visualization </label><input style='float:left;' type='submit' value='Go Back' onclick = \"main();\">";
 			    
 			     var strScoreTable = "";
 			     strScoreTable += "<table><tr><td>Protein ID</td><td>Score</td><td>%</td></tr>";
