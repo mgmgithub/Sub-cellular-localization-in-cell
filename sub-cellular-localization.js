@@ -253,14 +253,14 @@
 				divbtnBack.innerHTML = "<label style='float:left;'>Go back to localization visualization </label><input style='float:left;' type='submit' value='Go Back' onclick = \"main();\">";
 			    
 			     var strScoreTable = "";
-			     strScoreTable += "<table><tr><td>Protein ID</td><td>Score</td><td>%</td></tr>";
+			     strScoreTable += "<table><tr><td>Localization</td><td>Score</td><td>%</td></tr>";
 					 					 
 					 for (var i = 0; i < scoreColorArray.length; i++) {
 		          	 	  var scoreColor = scoreColorArray[i];
 						  
 						  if(proteinID==scoreColor.proteinID)
-						  {
-						      strScoreTable += "<tr><td>" + scoreColor.proteinID + "</td><td class='adjustRight'>" + scoreColor.proteinScore + "</td><td class='adjustRight'>" + scoreColor.percentScore + "</td></tr>";
+						  {						   									 
+						      strScoreTable += "<tr><td>" + scoreColor.proteinLocalization + "</td><td class='adjustRight'>" + scoreColor.proteinScore + "</td><td class='adjustRight'>" + scoreColor.percentScore + "</td></tr>";
 						  }						  
 						  
 				     }
@@ -276,7 +276,18 @@
 					 					 
 					 for (var i = 0; i < localizationColorArray.length; i++) {
 		          	 	  var LocColor = localizationColorArray[i];
-		          	 	  strLocTable += "<tr><td>" + LocColor.proteinLocalization + "</td><td class='adjustRight'>" + LocColor.numberProtein + "</td><td class='adjustRight'>" + LocColor.percentProtein + "</td></tr>";
+						  var locNbr = LocColor.numberProtein;
+						  if(LocColor.numberProtein == 0)
+						  {
+						   locNbr = "";
+						  }
+						  var locPercent = LocColor.percentProtein;
+						  if(LocColor.percentProtein == 0)
+						  {
+						   locPercent = "";
+						  }				  			  
+						   
+		          	 	  strLocTable += "<tr><td>" + LocColor.proteinLocalization + "</td><td class='adjustRight'>" + locNbr + "</td><td class='adjustRight'>" + locPercent + "</td></tr>";
 						  
 				     }
 					 
