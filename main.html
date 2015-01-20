@@ -41,7 +41,26 @@
   <div id="page-wrapper"> 
   	    <br/> 	    
   		<h1 style="font-size:30px;">Please upload your input file</h1>
-		<br/>
+		<br/>		
+		<div>
+              Select a color for localization: &nbsp;
+        	  <select id="ddlColorLoc">
+        		<option value="blue">Blue</option>
+        		<option value="green" selected="selected">Green</option>
+        		<option value="lila">Lila</option>
+        		<option value="red">Red</option>
+        	  </select>
+			  &nbsp; &nbsp; &nbsp; 
+			  Select a color for Score: &nbsp;
+        	  <select id="ddlColorScore">
+        		<option value="blue">Blue</option>
+        		<option value="green">Green</option>
+        		<option value="lila">Lila</option>
+        		<option value="red" selected="selected">Red</option>
+        	  </select>
+  	 	</div>
+        <br/>
+		
           		<div>
                   Select from example file : 
                     <input id = "case1" type="radio" name="ExampleType" value="case1" >One Protein One Localization

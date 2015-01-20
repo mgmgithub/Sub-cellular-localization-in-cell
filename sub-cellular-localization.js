@@ -5,6 +5,9 @@
 	var scoreColorArray = [];
 	var localizationColorArray = [];
 	var isNotOneProtein = false;
+	
+	var selectedcolorLoc;
+	var selectedcolorScore;
 
 	var cellPos = 0;
 
@@ -107,6 +110,19 @@
 		
 		isNotOneProtein = false;					  	 
 	} 
+	
+	//Select a color for localization		
+	function getDropdownListSelectedColorLoc() {	
+	var e = document.getElementById("ddlColorLoc");
+	selectedcolorLoc = e.options[e.selectedIndex].value;	
+   }
+      
+   //Select a color for score	
+	function getDropdownListSelectedColorScore() {	
+	var e = document.getElementById("ddlColorScore");
+	selectedcolorScore = e.options[e.selectedIndex].value;	
+   }
+	
 	
 	function writeHeader(objectName,proteinID)
 	{
@@ -309,140 +325,123 @@
 			 var divCaptionScore = getPopupObject('score');
         		  	  while (divCaptionScore.hasChildNodes()) {
 			  		  		divCaptionScore.removeChild(divCaptionScore.firstChild);
-					  }
-			  //Showing localization caption
+					  }				  
+			  
+			//Color arrays
+			  
+			//Blue - 0
+			var blue_colorArray=["#EBEBE0","#D6E0EB","#C2D1E0","#ADC2D6","#99B2CC","#85A3C2","#5C85AD","#336699","#29527A","#1F3D5C"];
+
+			//Green - 1
+		    var green_colorArray=["#E8F4E9","#D7FCDC","#B9FAC3","#96F6A5","#76E687","#4DCB60","#379745","#167023","#045310","#003F0A"];
+	
+			//Lila - 2
+			var lila_colorArray=["#FAE6FA","#F5CCF5","#F0B2F0","#EB99EB","#E680E6","#E066E0","#D633D6","#B800B8","#8F008F","#660066"];
+			
+			//Red - 3
+			var red_colorArray=["#FAE6E6","#F5CCCC","#F0B2B2","#EB9999","#E68080","#E06666","#D63333","#CC0000","#A30000","#7A0000"];
+		
+		
+			  //Showing Score caption
 			  if(proteinID != "")
 			  {
-			     
+							
+					var colorScoreArray_caption = [];
+					
+					if(selectedcolorScore  == "blue"){
+						colorScoreArray_caption = blue_colorArray.slice(0);
+					}
+					else if (selectedcolorScore  == "green"){
+						colorScoreArray_caption = green_colorArray.slice(0); 
+					}
+					else if (selectedcolorScore  == "lila"){
+						colorScoreArray_caption = lila_colorArray.slice(0); 
+					}
+					else if (selectedcolorScore == "red"){
+						colorScoreArray_caption = red_colorArray.slice(0); 
+					}
+					else{
+						//Red
+						var red_colorArray=["#FAE6E6","#F5CCCC","#F0B2B2","#EB9999","#E68080","#E06666","#D63333","#CC0000","#A30000","#7A0000"];
+					}
+			  
+			  
+					var scoreColors="";
+					for (var i = 0; i < colorScoreArray_caption.length; i++) {
+						scoreColors = scoreColors + "<td bgcolor='"+colorScoreArray_caption[i]+"' height='5' width='18'></td>";
+					}
+			         
 					  divCaptionScore.innerHTML = "<table><tr><td colspan='22'><b>Score : </b></td></tr>" 
-                      + "<tr>"
-                        + "<td>Min</td>"
-						
-                        + "<td bgcolor='#DFFFDF' height='5' width='18'></td>"
-						+ "<td bgcolor='#DFFFDF' height='5' width='18'></td>"
-                        + "<td bgcolor='#C2FFA3' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#CCFF66' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#B8E62E' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#00FF00' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#66E066' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#33CC33' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#00CC7A' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#00CCA3' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#29A6A6' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#4DDBFF' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#2EB8E6' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#29A3CC' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#008AE6' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#537CCF' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#335CAD' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#5454D6' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#2929CC' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#1F1F7A' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#0A0A1F' height='5' width='18'></td>"
-						
-						
-                    	+ "<td>Max</td>"
-                      + "</tr>"
-					  
-					  
-					  
+                      + "<tr><td>Min</td>" + scoreColors + "<td>Max</td></tr>"					  
 					  + "<tr>"					   
                         + "<td></td>"   
 						+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>0</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>5</font></td>"
                     	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>10</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>15</font></td>"
                     	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>20</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>25</font></td>"
                     	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>30</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>35</font></td>"
                     	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>40</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>45</font></td>"
                     	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>50</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>55</font></td>"
                     	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>60</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>65</font></td>"
                     	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>70</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>75</font></td>"
                     	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>80</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>85</font></td>"
                     	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>90</font></td>"
-						+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>95</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>100</font></td>"   
+                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>100</font></td>"
+                       
 						+ "<td><font size='2'>%</font></td>"                    	
                       + "</tr>"
 					  
-					  
-					  
-					  
-                      
-                    + "</table>";
+					+ "</table>";
 					  
         	  }
 			  
 			  else
 			  {
-			   	 //Showing score caption 
-					  
+			   	 //Showing Localization caption 				 
+		
+		            var colorLocalizationArray_caption=[];
+					
+					if(selectedcolorLoc == "blue"){
+						colorLocalizationArray_caption = blue_colorArray.slice(0);
+					}
+					else if (selectedcolorLoc == "green"){
+						colorLocalizationArray_caption = green_colorArray.slice(0); 
+					}
+					else if (selectedcolorLoc == "lila"){
+						colorLocalizationArray_caption = lila_colorArray.slice(0); 
+					}
+					else if (selectedcolorLoc == "red"){
+						colorLocalizationArray_caption = red_colorArray.slice(0); 
+					}
+					else{
+					//Green 
+						colorLocalizationArray_caption=["#E8F4E9","#D7FCDC","#B9FAC3","#96F6A5","#76E687","#4DCB60","#379745","#167023","#045310","#003F0A"];
+					}
+								 			 
+					 
+					var locColors="";
+					for (var i = 0; i < colorLocalizationArray_caption.length; i++) {
+						locColors = locColors + "<td bgcolor='"+colorLocalizationArray_caption[i]+"' height='5' width='18'></td>";
+					}
+					 
 					 divCaptionLoc.innerHTML = "<table><tr><td colspan='22'><b>Localization : </b></td></tr>"                     
-                      + "<tr>"					   
-                        + "<td>Min</td>"
-                        + "<td bgcolor='#FFFF99' height='5' width='18'></td>"
-						+ "<td bgcolor='#FFFF99' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FFFF66' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FFFF33' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FFFF00' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FFCC33' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FFCC00' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF9933' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF9900' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#F39114' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF6600' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF6633' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF3636' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF3300' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#FF0000' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#E60000' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#CC2900' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#BA1919' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#8f0000' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#590000' height='5' width='18'></td>"
-                    	+ "<td bgcolor='#350000' height='5' width='18'></td>"                       
-                    	+ "<td>Max</td>"
-                      + "</tr>"
-					  
-					 		  
-					   
+                      + "<tr><td>Min</td>" + locColors	+ "<td>Max</td></tr>"			  					   
 					  + "<tr>"					   
-                        + "<td></td>"   
-						+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>0</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>5</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>10</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>15</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>20</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>25</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>30</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>35</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>40</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>45</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>50</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>55</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>60</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>65</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>70</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>75</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>80</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>85</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>90</font></td>"
-						+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>95</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>100</font></td>"   
-						+ "<td><font size='2'>%</font></td>"                    	
-                      + "</tr>"
-					  
-                      
-                    + "</table>"; 
-			  }
-	        
+                      + "<td></td>"   
+					  + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>0</font></td>"
+                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>10</font></td>"
+                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>20</font></td>"
+                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>30</font></td>"
+                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>40</font></td>"
+                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>50</font></td>"
+                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>60</font></td>"
+					  + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>70</font></td>"
+                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>80</font></td>"
+                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>90</font></td>"
+                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>100</font></td>"                    	
+					  + "<td><font size='2'>%</font></td>"                    	
+                      + "</tr>"                      
+                      + "</table>"; 
+			  }	        
 	
 	}
 	
@@ -3566,15 +3565,41 @@
 						 
 	}
 	function definedColorLocalization() {
+  
+        var colorLocalizationArray =[];
+	    
+		//Blue - 0
+	    var blue_colorLocalizationArray=["#EBEBE0","#D6E0EB","#C2D1E0","#ADC2D6","#99B2CC","#85A3C2","#5C85AD","#336699","#29527A","#1F3D5C"];
 
-
-	    //Array containing localization colors
-	   var colorLocalizationArray=[
-	   "#FFFF99","#FFFF66","#FFFF33","#FFFF00","#FFCC33","#FFCC00","#FF9933","#FF9900","#F39114","#FF6600",
-	   "#FF6633","#FF3636","#FF3300","#FF0000","#E60000","#CC2900","#BA1919","#8f0000","#590000","#350000"
-	   ];
-
-
+		//Green - 1
+		 var green_colorLocalizationArray=["#E8F4E9","#D7FCDC","#B9FAC3","#96F6A5","#76E687","#4DCB60","#379745","#167023","#045310","#003F0A"];
+	
+	    //Lila - 2
+		var lila_colorLocalizationArray=["#FAE6FA","#F5CCF5","#F0B2F0","#EB99EB","#E680E6","#E066E0","#D633D6","#B800B8","#8F008F","#660066"];
+			
+		//Red - 3
+		var red_colorLocalizationArray=["#FAE6E6","#F5CCCC","#F0B2B2","#EB9999","#E68080","#E06666","#D63333","#CC0000","#A30000","#7A0000"];
+		
+		
+	     if(selectedcolorLoc == "blue"){
+			colorLocalizationArray = blue_colorLocalizationArray.slice(0);
+		 }
+		 else if (selectedcolorLoc == "green"){
+			  colorLocalizationArray = green_colorLocalizationArray.slice(0); 
+		 }
+		 else if (selectedcolorLoc == "lila"){
+			  colorLocalizationArray = lila_colorLocalizationArray.slice(0); 
+		 }
+		 else if (selectedcolorLoc == "red"){
+			  colorLocalizationArray = red_colorLocalizationArray.slice(0); 
+		 }
+		 else{
+			//Green 
+			  colorLocalizationArray=["#E8F4E9","#D7FCDC","#B9FAC3","#96F6A5","#76E687","#4DCB60","#379745","#167023","#045310","#003F0A"];
+		 }
+		 
+		 
+	
 
 	    //Array containing protein compartment, number of proteins per compartment and color
 	    var proteinLocalizationColorArray = [];
@@ -3788,7 +3813,15 @@
 	        ni_cellcompatmentArray = b_ni_cellcompatmentArray.slice(0);
 	        ni_numcellcompatmentArray.push(b_cellcompartment);
 	    }
-
+		
+		//Get total number of proteins		
+		var countnumpro=0;
+		for (var i = 0; i < numproteinsArray.length; i++) {
+		
+		 countnumpro = countnumpro + numproteinsArray[i]
+		}
+		
+		
 	    //Get max and min number of proteins
 
 	    var sortproteinsArray = numproteinsArray.slice(0);
@@ -3799,7 +3832,7 @@
 	    //Applying formula to assign color for localization
 
 	    //class size localization
-	    var maxcolorloc = 20;
+	    var maxcolorloc = 10;
 	    var csloc = (maxnumpro - minnumpro) / maxcolorloc;
 
 	    // Array of size classes for localization
@@ -3847,7 +3880,7 @@
 	                        proteinLocalization: cellcompartmentArray[i],
 	                        LocalizationColor: colorLocalizationArray[j],
 							numberProtein : numproteinsArray[i],
-							percentProtein : Math.round((100 / parseInt(maxnumpro)) * parseInt(numproteinsArray[i])) 
+							percentProtein : Math.round((parseInt(numproteinsArray[i])/parseInt(countnumpro))*100)
 	                    });
 	                }
 	            }
@@ -4179,7 +4212,12 @@
 	   
 	   var rdbCase3 = getPopupObject('case3');
 	   rdbCase3.setAttribute("onclick", "createStringExample('3');");
-   				
+	   
+	   var selectLoc = getPopupObject('ddlColorLoc');
+   	   selectLoc.setAttribute("onchange", "getDropdownListSelectedColorLoc();");	
+	   
+	   var selectScore = getPopupObject('ddlColorScore');
+   	   selectScore.setAttribute("onchange", "getDropdownListSelectedColorScore();");		
    	
         var fileInput = document.getElementById('fileInput');
         var fileDisplayArea = document.getElementById('fileDisplayArea');	
