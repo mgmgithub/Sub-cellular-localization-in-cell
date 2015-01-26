@@ -278,14 +278,14 @@
 				divbtnBack.innerHTML = "<label style='float:left;'>Go back to localization visualization </label><input style='float:left;' type='submit' value='Go Back' onclick = \"main();\">";
 			    
 			     var strScoreTable = "";
-			     strScoreTable += "<table><tr><td>Localization</td><td>Score</td></tr>";
+			     strScoreTable += "<table><tr><td>Localization</td><td>Score</td><td>%</td></tr>";
 					 					 
 					 for (var i = 0; i < scoreColorArray.length; i++) {
 		          	 	  var scoreColor = scoreColorArray[i];
 						  
 						  if(proteinID==scoreColor.proteinID)
 						  {						   									 
-						      strScoreTable += "<tr><td>" + scoreColor.proteinLocalization + "</td><td class='adjustRight'>" + scoreColor.proteinScore + "</td></tr>";
+						      strScoreTable += "<tr><td>" + scoreColor.proteinLocalization + "</td><td class='adjustRight'>" + scoreColor.proteinScore + "</td><td class='adjustRight'>" + scoreColor.percentScore + "</td></tr>";
 						  }						  
 						  
 				     }
@@ -398,7 +398,7 @@
                     	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>90</font></td>"
                     	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>100</font></td>"
                        
-						//+ "<td><font size='2'>%</font></td>"                    	
+						+ "<td><font size='2'>%</font></td>"                    	
                       + "</tr>"
 					  
 					+ "</table>";
