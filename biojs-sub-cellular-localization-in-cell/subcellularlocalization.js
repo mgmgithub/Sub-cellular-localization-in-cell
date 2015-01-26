@@ -1,13 +1,23 @@
 
+
+var d3 = require("d3");
+
+
+var subcellularlocalization = function () {
+
+
     //Global variables
 	var cellType = "";
     var scoreProtein = [];	
 	var scoreColorArray = [];
 	var localizationColorArray = [];
+	
+	var roundedRightArray =[];
+	
 	var isNotOneProtein = false;
 	
-	var selectedcolorLoc;
-	var selectedcolorScore;
+	var selectedcolorLoc="green";
+	var selectedcolorScore="red";
 
 	var cellPos = 0;
 
@@ -20,6 +30,8 @@
 	var eukaPos = 0;
 	var bactPos = 0;
 	var archPos = 0;
+	
+	var secondlineScore  = "";
 
 
 	//18 cell compartments for Eukaryota
@@ -92,23 +104,27 @@
 	
 	//Showing score with little popup
 	function showHighlightScore(proteinID)
-	{	 		 
-		
+	{	 	
+			
 		ClearPopup();	 
-		selectCellPicture();			
+		selectCellPicture();		
+
+        scoreColorArray=definedColorScore(secondlineScore);	
+		
 		 for (var i = 0; i < scoreColorArray.length; i++) {
+		          
 		          var highlightColor = scoreColorArray[i];
 		 	 	  if(proteinID == highlightColor.proteinID)
 			 	  {		
 				  	 	                       	  		
 				  	  highlightCompartments(highlightColor.proteinID, highlightColor.proteinLocalization,highlightColor.scoreColor);		
 				  }		  
-			 }			 
+			 }	
 			 
 		//Header
-       	writeHeader('headerPP',proteinID);		
+       	writeHeader('headerPP',proteinID);			
+		isNotOneProtein = false;	
 		
-		isNotOneProtein = false;					  	 
 	} 
 	
 	//Select a color for localization		
@@ -205,7 +221,7 @@
     																					
                                 				    innerTag.setAttribute("onClick", "javaScript:showHighlightScore('"+scorePT.proteinID+"');");						
                                 					innerTag.innerHTML = "<a href='#'>" + scorePT.proteinID + ":<b>" + scorePT.proteinScore+"</b></a>";
-                                					
+													                                					
                                 					columnProtein.appendChild(innerTag);                  
                                 					rowProtein.appendChild(columnProtein);
                                                     detailPopup.appendChild(rowProtein);		   
@@ -269,14 +285,14 @@
 				divbtnBack.innerHTML = "<label style='float:left;'>Go back to localization visualization </label><input style='float:left;' type='submit' value='Go Back' onclick = \"main();\">";
 			    
 			     var strScoreTable = "";
-			     strScoreTable += "<table><tr><td>Localization</td><td>Score</td><td>%</td></tr>";
+			     strScoreTable += "<table><tr><td>Localization</td><td>Score</td></tr>";
 					 					 
 					 for (var i = 0; i < scoreColorArray.length; i++) {
 		          	 	  var scoreColor = scoreColorArray[i];
 						  
 						  if(proteinID==scoreColor.proteinID)
 						  {						   									 
-						      strScoreTable += "<tr><td>" + scoreColor.proteinLocalization + "</td><td class='adjustRight'>" + scoreColor.proteinScore + "</td><td class='adjustRight'>" + scoreColor.percentScore + "</td></tr>";
+						      strScoreTable += "<tr><td>" + scoreColor.proteinLocalization + "</td><td class='adjustRight'>" + scoreColor.proteinScore + "</td></tr>";
 						  }						  
 						  
 				     }
@@ -306,12 +322,11 @@
 		          	 	  strLocTable += "<tr><td>" + LocColor.proteinLocalization + "</td><td class='adjustRight'>" + locNbr + "</td><td class='adjustRight'>" + locPercent + "</td></tr>";
 						  
 				     }
-					 
-					 strLocTable += "</table>"; 
+				 strLocTable += "</table>"; 
 			     divTableLoc.innerHTML = strLocTable;
 				 divTableLoc.style.visibility = 'visible';
 			  }
-	
+			  
 	}
 	
 	
@@ -337,7 +352,7 @@
 	
 			//Lila - 2
 			var lila_colorArray=["#FAE6FA","#F5CCF5","#F0B2F0","#EB99EB","#E680E6","#E066E0","#D633D6","#B800B8","#8F008F","#660066"];
-			
+		
 			//Red - 3
 			var red_colorArray=["#FAE6E6","#F5CCCC","#F0B2B2","#EB9999","#E68080","#E06666","#D63333","#CC0000","#A30000","#7A0000"];
 		
@@ -346,8 +361,9 @@
 			  if(proteinID != "")
 			  {
 							
-					var colorScoreArray_caption = [];
+					var colorScoreArray_caption = [];				
 					
+
 					if(selectedcolorScore  == "blue"){
 						colorScoreArray_caption = blue_colorArray.slice(0);
 					}
@@ -358,7 +374,7 @@
 						colorScoreArray_caption = lila_colorArray.slice(0); 
 					}
 					else if (selectedcolorScore == "red"){
-						colorScoreArray_caption = red_colorArray.slice(0); 
+						colorScoreArray_caption = red_colorArray.slice(0); 						
 					}
 					else{
 						//Red
@@ -368,26 +384,28 @@
 			  
 					var scoreColors="";
 					for (var i = 0; i < colorScoreArray_caption.length; i++) {
-						scoreColors = scoreColors + "<td bgcolor='"+colorScoreArray_caption[i]+"' height='5' width='18'></td>";
+						scoreColors = scoreColors + "<td bgcolor='"+colorScoreArray_caption[i]+"' height='5' width='20'></td>";
+						
 					}
 			         
-					  divCaptionScore.innerHTML = "<table><tr><td colspan='22'><b>Score : </b></td></tr>" 
-                      + "<tr><td>Min</td>" + scoreColors + "<td>Max</td></tr>"					  
+					   divCaptionScore.innerHTML = "<table><tr><td colspan='22' height='5' width='20'><span style='font-weight:bold;font-family:tahoma'><font size='2'>Score: </font></span></td></tr>"                     
+					  
+                      + "<tr><td bgcolor='#151717' height='5' width='20'><font size='2'>Min</font></td><td bgcolor='#ffffff' height='5' width='20'></td>" + scoreColors	+ "<td height='5' width='18'><font size='2'>Max</font></td></tr>"			  					   						
 					  + "<tr>"					   
                         + "<td></td>"   
-						+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>0</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>10</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>20</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>30</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>40</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>50</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>60</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>70</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>80</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>90</font></td>"
-                    	+ "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>100</font></td>"
+						+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>0</font></td>"
+                    	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>10</font></td>"
+                    	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>20</font></td>"
+                    	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>30</font></td>"
+                    	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>40</font></td>"
+                    	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>50</font></td>"
+                    	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>60</font></td>"
+                    	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>70</font></td>"
+                    	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>80</font></td>"
+                    	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>90</font></td>"
+                    	+ "<td bgcolor='#151717' height='5' width='20'><font size='2'>100</font></td>"
                        
-						+ "<td><font size='2'>%</font></td>"                    	
+						//+ "<td><font size='2'>%</font></td>"                    	
                       + "</tr>"
 					  
 					+ "</table>";
@@ -396,8 +414,8 @@
 			  
 			  else
 			  {
-			   	 //Showing Localization caption 				 
-		
+			   	 //Showing Localization caption 
+					
 		            var colorLocalizationArray_caption=[];
 					
 					if(selectedcolorLoc == "blue"){
@@ -420,26 +438,19 @@
 					 
 					var locColors="";
 					for (var i = 0; i < colorLocalizationArray_caption.length; i++) {
-						locColors = locColors + "<td bgcolor='"+colorLocalizationArray_caption[i]+"' height='5' width='18'></td>";
+						locColors = locColors + "<td bgcolor='"+colorLocalizationArray_caption[i]+"' height='5' width='20'></td>";
 					}
 					 
-					 divCaptionLoc.innerHTML = "<table><tr><td colspan='22'><b>Localization : </b></td></tr>"                     
-                      + "<tr><td>Min</td>" + locColors	+ "<td>Max</td></tr>"			  					   
-					  + "<tr>"					   
-                      + "<td></td>"   
-					  + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>0</font></td>"
-                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>10</font></td>"
-                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>20</font></td>"
-                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>30</font></td>"
-                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>40</font></td>"
-                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>50</font></td>"
-                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>60</font></td>"
-					  + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>70</font></td>"
-                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>80</font></td>"
-                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>90</font></td>"
-                      + "<td bgcolor='#FFFFFF' height='5' width='18'><font size='2'>100</font></td>"                    	
-					  + "<td><font size='2'>%</font></td>"                    	
-                      + "</tr>"                      
+					 
+					//Print size class in percentages					
+					
+					var locPercentages="";
+					for (var i = 0; i < roundedRightArray.length; i++) {
+						locPercentages = locPercentages + "<td bgcolor='#151717' height='5' width='20'><span style='font-family:tahoma;'><font size='2'>"+roundedRightArray[i]+"</font></span></td>";
+					}			
+					 divCaptionLoc.innerHTML = "<table><tr><td colspan='22' height='5' width='20'><span style='font-weight:bold;font-family:tahoma'><font size='2'>Localization: </font></span></td></tr>"                     
+                      + "<tr><td height='5' width='20'><font size='2'>Min</font></td></td><td bgcolor='#ffffff' height='5' width='20'></td>" + locColors	+ "<td height='5' width='18'><font size='2'>Max</font></td></tr>"			  					   
+					  + "<tr><td height='5' width='20'></td><td bgcolor='#151717' height='5' width='20'><font size='2'>0</font></td>" + locPercentages + "<td><font size='2'>%</font></td></tr>"                      
                       + "</table>"; 
 			  }	        
 	
@@ -3598,9 +3609,7 @@
 			  colorLocalizationArray=["#E8F4E9","#D7FCDC","#B9FAC3","#96F6A5","#76E687","#4DCB60","#379745","#167023","#045310","#003F0A"];
 		 }
 		 
-		 
-	
-
+		
 	    //Array containing protein compartment, number of proteins per compartment and color
 	    var proteinLocalizationColorArray = [];
 	    var colorCellCompartment;
@@ -3814,14 +3823,35 @@
 	        ni_numcellcompatmentArray.push(b_cellcompartment);
 	    }
 		
+		
 		//Get total number of proteins		
 		var countnumpro=0;
-		for (var i = 0; i < numproteinsArray.length; i++) {
-		
+		for (var i = 0; i < numproteinsArray.length; i++) {		
 		 countnumpro = countnumpro + numproteinsArray[i]
 		}
 		
+				
+		//Get loc percentages
+		var localizationpercentageArray = [];		
+		for (var i = 0; i < numproteinsArray.length; i++) {
+			localizationpercentageArray.push(Math.round((parseInt(numproteinsArray[i])/parseInt(countnumpro))*100));
+		}		
 		
+		
+		//Get max and min percentages(localization)
+		
+		var sortlocalizationpercentageArray = localizationpercentageArray.slice(0);
+	    var maxpercentage = sortlocalizationpercentageArray.sort(function (a, b) { return b - a })[0];
+	    var minpercentage = sortlocalizationpercentageArray.sort(function (a, b) { return a - b })[0];
+				
+		
+		//Applying formula to assign color for localization
+
+	    //class size localization
+	    var maxcolorloc = 10;
+	    var csloc = (-1)*((minpercentage - maxpercentage) / maxcolorloc);
+		
+					
 	    //Get max and min number of proteins
 
 	    var sortproteinsArray = numproteinsArray.slice(0);
@@ -3829,19 +3859,14 @@
 	    var maxnumpro = sortproteinsArray.sort(function (a, b) { return b - a })[0];
 	    var minnumpro = sortproteinsArray.sort(function (a, b) { return a - b })[0];
 
-	    //Applying formula to assign color for localization
-
-	    //class size localization
-	    var maxcolorloc = 10;
-	    var csloc = (maxnumpro - minnumpro) / maxcolorloc;
-
-	    // Array of size classes for localization
+		// Array of size classes for localization
 	    var leftArrayloc = [];
 	    var rightArrayloc = [];
 
-	    leftArrayloc.push(minnumpro);
-	    rightArrayloc.push(minnumpro + csloc);
-
+	    leftArrayloc.push(minpercentage);
+	    rightArrayloc.push(minpercentage + csloc);
+		
+		
 	    for (i = 1; i < maxcolorloc; i++) {
 
 	        leftloc = rightArrayloc[i - 1];
@@ -3852,41 +3877,58 @@
 
 	    }
 
-	    //Rounding the last element of localization array to an integer
-	    if (!(Number.isInteger(rightArrayloc[19]))) {
-	        rightArrayloc[19] = Math.round(rightArrayloc[19]);
+		//Rounding the last element of localization array to an integer
+	    if (!(Number.isInteger(rightArrayloc[9]))) {
+	        rightArrayloc[9] = Math.round(rightArrayloc[9]);
 	    }
 
+			
+		//Define size class as caption			
+		roundedRightArray = [];
+		for (i = 0; i < rightArrayloc.length; i++) {
+			roundedRightArray.push(Math.round(rightArrayloc[i]));
+		}
 
+		
 	    //Fill array with counters and colors
-
 	    var proteinLocColorArray = [];
-
-	    for (var i = 0; i < numproteinsArray.length; i++) {
+		
+       		
+		//Loop for asigning colors
+		var colorLocalizationpercentageArray=[];
+		for (var i = 0; i < localizationpercentageArray.length; i++) {
 
 	        for (var j = 0; j < leftArrayloc.length; j++) {
-	            if (numproteinsArray[i] >= leftArrayloc[j] && numproteinsArray[i] <= rightArrayloc[j]) {
-	                if (numproteinsArray[i] == 0) {
+	            if (localizationpercentageArray[i] >= leftArrayloc[j] && localizationpercentageArray[i] <= rightArrayloc[j]) {
+	                
+					colorLocalizationpercentageArray.push(colorLocalizationArray[j]);
+	            }
+	        }
+	    }	
+		//end Loop
+		
+		for (var i = 0; i < localizationpercentageArray.length; i++) {
+
+	                if (localizationpercentageArray[i] == 0) {
 	                    proteinLocColorArray.push({
 	                        proteinLocalization: cellcompartmentArray[i],
-	                        LocalizationColor: "none",
-							numberProtein : numproteinsArray[i],
-							percentProtein :  0
+	                        LocalizationColor: "none",                   
+							numberProtein: numproteinsArray[i],
+							percentProtein:  0
 	                    });
 	                }
 	                else {
 
 	                    proteinLocColorArray.push({
 	                        proteinLocalization: cellcompartmentArray[i],
-	                        LocalizationColor: colorLocalizationArray[j],
+	                        LocalizationColor: colorLocalizationpercentageArray[i],
 							numberProtein : numproteinsArray[i],
-							percentProtein : Math.round((parseInt(numproteinsArray[i])/parseInt(countnumpro))*100)
+							percentProtein : localizationpercentageArray[i]
 	                    });
-	                }
-	            }
-	        }
+	                }        
 
 	    }
+		
 	    return proteinLocColorArray;
 
 	}
@@ -3894,14 +3936,39 @@
 	
 	function definedColorScore(maxminScore)
 	{
+			
+	 		var colorArray=[];
+			//Blue - 0
+			var blue_colorScoreArray=["#EBEBE0","#D6E0EB","#C2D1E0","#ADC2D6","#99B2CC","#85A3C2","#5C85AD","#336699","#29527A","#1F3D5C"];
+
+			//Green - 1
+			var green_colorScoreArray=["#E8F4E9","#D7FCDC","#B9FAC3","#96F6A5","#76E687","#4DCB60","#379745","#167023","#045310","#003F0A"];
 	
-	 		 //Array containing score colors
-              var colorArray = [
-              "#DFFFDF","#C2FFA3","#CCFF66","#B8E62E","#00FF00","#66E066","#33CC33","#00CC7A","#00CCA3","#29A6A6",
-              "#4DDBFF","#2EB8E6","#29A3CC","#008AE6","#537CCF","#335CAD","#5454D6","#2929CC","#1F1F7A","#0A0A1F"
-              ];
-              var maxcolor=20;
-              
+			//Lila - 2
+			var lila_colorScoreArray=["#FAE6FA","#F5CCF5","#F0B2F0","#EB99EB","#E680E6","#E066E0","#D633D6","#B800B8","#8F008F","#660066"];
+			
+			//Red - 3
+			var red_colorScoreArray=["#FAE6E6","#F5CCCC","#F0B2B2","#EB9999","#E68080","#E06666","#D63333","#CC0000","#A30000","#7A0000"];
+		
+		
+			if(selectedcolorScore == "blue"){
+				colorArray = blue_colorScoreArray.slice(0);
+			}
+			else if (selectedcolorScore == "green"){
+				colorArray = green_colorScoreArray.slice(0); 
+			}
+			else if (selectedcolorScore == "lila"){
+				colorArray = lila_colorScoreArray.slice(0); 
+			}
+			else if (selectedcolorScore == "red"){
+				colorArray = red_colorScoreArray.slice(0); 
+			}
+			else{
+				//Red
+				colorArray=["#FAE6E6","#F5CCCC","#F0B2B2","#EB9999","#E68080","#E06666","#D63333","#CC0000","#A30000","#7A0000"];
+			}
+			
+			var maxcolor=10;              
               
               //Get the minimum and maximum score by reading the second line of the file
               var score = maxminScore;
@@ -3909,8 +3976,7 @@
               var scorescale = score.split("-");
               var min = (scorescale[0]+1)-1;
               var max = scorescale[1];
-
-              
+   
               
               //class size
               var cs=(max-min)/maxcolor;
@@ -3937,8 +4003,7 @@
               //Assign color to proteinscore
               for(var i=0; i<scoreProtein.length; i++){
               	var score = scoreProtein[i];
-    										
-    				
+    										    				
     					if(score.proteinScore == 0)
     					{
     					 		proteinScoreColorArray.push({
@@ -3957,19 +4022,20 @@
                            		if(score.proteinScore>leftArray[j] && score.proteinScore<=rightArray[j]){					
           						proteinScoreColorArray.push({
           						        proteinID:score.proteinID,
-                                          proteinLocalization: score.proteinLocalization,
+                                        proteinLocalization: score.proteinLocalization,
           								proteinScore: score.proteinScore,
           								scoreColor: colorArray[j],
           								percentScore: Math.round((100 / parseInt(scoreProtein[0].proteinScore)) * parseInt(score.proteinScore))
           								
-                                      });				
-          							
+                                      });	         							
           								
                         			}
                         	 }	
     				    }				
 					
                }
+			  
+			  
 			  
 			  return proteinScoreColorArray;	
 	
@@ -4072,7 +4138,8 @@
                         						isOneProteinInFile();
                         						
                         						//Color of score
-                        						scoreColorArray = definedColorScore(fileLines[1].trim().toLowerCase());	
+                        						scoreColorArray = definedColorScore(fileLines[1].trim().toLowerCase());												
+												secondlineScore = fileLines[1].trim().toLowerCase();
                         						
                         						//Color of Protein number				
                         						localizationColorArray = definedColorLocalization();				
@@ -4161,6 +4228,8 @@
                         						
                         						//Color of score
                         						scoreColorArray = definedColorScore(fileLines[1].trim().toLowerCase());	
+												
+												secondlineScore = fileLines[1].trim().toLowerCase();
                         						
                         						//Color of Protein number				
                         						localizationColorArray = definedColorLocalization();				
@@ -4244,3 +4313,9 @@
     }
 	
 	main();
+
+};
+
+module.exports = subcellularlocalization;
+
+
