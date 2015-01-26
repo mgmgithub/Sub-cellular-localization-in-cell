@@ -1,0 +1,84 @@
+{
+  "name": "biojs-sub-cellular-localization-in-cell",
+  "description": "To visualize biological cells and highlight by a user selected sub-cellular compartments in a way that they stand out from the un-selected ones",
+  "version": "0.1.0",
+  "homepage": "https://github.com/prapapuy/biojs-sub-cellular-localization-in-cell",
+  "contributors": [
+    {
+      "name": "Prapaporn (Pui) Dangnoy",
+      "email": "p.dangnoy@tum.de"
+    },
+    {
+      "name": "Madhura Kumaraswamy",
+      "email": "madhura.kswamy@gmail.com"
+    },
+    {
+      "name": "Maribel ",
+      "email": "maribel.guzmanm@gmail.com"
+    },
+    {
+      "name": "Tatyana Goldberg"
+    },
+    {
+      "name": "Juan Miguel Cejuela"
+    },
+    {
+      "name": "Sebastian Wilzbach"
+    },
+    {
+      "name": "David Dao"
+    },
+    {
+      "name": "Rachel First"
+    },
+    {
+      "name": "Prof. Dr. Burkhard Rost"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/prapapuy/biojs-sub-cellular-localization-in-cell.git"
+  },
+  "bugs": {
+    "url": "https://github.com/prapapuy/biojs-sub-cellular-localization-in-cell/issues"
+  },
+  "licenses": [
+    {
+      "type": "Apache 2",
+      "url": "https://github.com/prapapuy/biojs-sub-cellular-localization-in-cell/blob/master/LICENSE"
+    }
+  ],
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo 'Error: no test specified' && exit 1",
+    "build": "mkdirp build && browserify -r ./:biojs-sub-cellular-localization-in-cell -o build/cell.js",
+    "build-browser": "npm run build",
+    "prepublish": "npm run build",
+    "watch": "watchify -r ./:biojs-sub-cellular-localization-in-cell -v -o build/cell.js",
+    "sniper": "biojs-sniper ."
+  },
+  "dependencies": {
+    "d3": "^3.5.3"
+  },
+  "devDependencies": {
+    "mkdirp": "^0.5.0",
+    "browserify": "6.x",
+    "biojs-sniper": "0.x",
+    "watchify": "^1.0.6"
+  },
+  "sniper": {
+    "js": [
+      "/build/cell.js"
+    ],
+    "css": ["../css/5grid/core.css", "../css/sub-cellular-localization.css", "../css/style.css"],
+    "snippets": [
+      "examples"
+    ],
+    "first": "main"
+  },
+  "keywords": [
+    "visualization",
+    "sub-cellular-localization",
+    "biojs"
+  ]
+}
