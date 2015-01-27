@@ -2,7 +2,7 @@
   "name": "biojs-sub-cellular-localization-in-cell",
   "description": "To visualize biological cells and highlight by a user selected sub-cellular compartments in a way that they stand out from the un-selected ones",
   "version": "0.1.0",
-  "homepage": "https://github.com/prapapuy/biojs-sub-cellular-localization-in-cell",
+  "homepage": "https://github.com/3BioGirls/Sub-cellular-localization-in-cell",
   "contributors": [
     {
       "name": "Prapaporn (Pui) Dangnoy",
@@ -37,15 +37,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/prapapuy/biojs-sub-cellular-localization-in-cell.git"
+    "url": "git://github.com/3BioGirls/Sub-cellular-localization-in-cell.git"
   },
   "bugs": {
-    "url": "https://github.com/prapapuy/biojs-sub-cellular-localization-in-cell/issues"
+    "url": "https://github.com/3BioGirls/Sub-cellular-localization-in-cell/issues"
   },
   "licenses": [
     {
       "type": "Apache 2",
-      "url": "https://github.com/prapapuy/biojs-sub-cellular-localization-in-cell/blob/master/LICENSE"
+      "url": "https://github.com/3BioGirls/Sub-cellular-localization-in-cell/blob/master/LICENSE"
     }
   ],
   "main": "lib/index.js",
